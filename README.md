@@ -5,6 +5,16 @@
 
 Quibble.Xunit is an extension to XUnit that does asserts on text strings with JSON content. It provides a method `Assert.JsonEqual` that compares strings with JSON content. If the strings do not contain equal JSON content, Quibble.Xunit will point you to the differences.
 
+# Why Quibble.Xunit?
+
+We often want to verify that some JSON text matches our expectations. A typical use case is writing tests for a web api that serves JSON responses. Without a JSON diff tool, we have two options: compare the JSON text as strings or deserialize the JSON into a data structure and compare the data structure with your expectations. 
+
+Comparing JSON text as strings may be acceptable for very small JSON documents, but it quickly becomes a very poor experience as JSON documents have more than a couple of properties. Calling `Assert.Equal` on two strings will point you to the exact character position where the strings first deviate, but that's not really a helpful way of navigating a JSON document. In addition, calling `Assert.Equal` on strings will not help you in identifying multiple differences between the JSON documents at the same time.
+
+Deserializing the response before comparing means that you have to write deserialization code (which may or may not be trivial) and in addition means you're comparing something else than what you really wanted to compare. In addition, you essentially have the same problem as with comparing strings. It is easy enough to check whether or not two objects deserialized from JSON are equal, but harder to figure out exactly how they're different if they are. Unless you want to peek into properties in your debugger, you must typically implement a suitable comparison mechanism if you want more detailed information. 
+
+In contrast, Quibble.Xunit understands JSON and will point you directly to the differences in your JSON documents. Quibble.Xunit uses [JsonPath](https://goessner.net/articles/JsonPath/) syntax to point you to the right locations. In JsonPath syntax, `$` indicates the root of the document, whereas something like `$.books[1].author` means "the author property of the second element of the books array".
+
 # Examples 
 
 ## F#
