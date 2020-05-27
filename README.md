@@ -10,7 +10,7 @@ Quibble.Xunit is an extension to XUnit that does asserts on text strings with JS
 ## F#
 
 ```
-open Quibble.Xunit;
+open Quibble.Xunit
 ```
 
 ### Comparing numbers
