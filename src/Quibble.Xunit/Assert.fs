@@ -2,8 +2,10 @@
 
 open Xunit.Sdk
 
-type JsonAssertException(expected: obj, actual: obj, message: string) =
-    inherit AssertActualExpectedException(expected, actual, message)
+type JsonAssertException(expected: obj, actual: obj, messages: string list) =
+    inherit AssertActualExpectedException(expected, actual, String.concat "\n" messages)
+    
+    member self.DiffMessages = messages
 
 module Assert =
     
@@ -13,6 +15,5 @@ module Assert =
         let diffs : Diff list = JsonStrings.diff actualJsonString expectedJsonString
         let messages : string list = diffs |> List.map DiffMessage.toDiffMessage
         if not (List.isEmpty messages) then
-            let singleMessage = messages |> String.concat "\n"
-            let ex = JsonAssertException(expectedJsonString, actualJsonString, singleMessage)
+            let ex = JsonAssertException(expectedJsonString, actualJsonString, messages)
             raise ex
