@@ -5,7 +5,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Tests.fs" />
-    <Content Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Quibble.Xunit\Quibble.Xunit.fsproj" />

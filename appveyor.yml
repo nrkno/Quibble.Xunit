@@ -16,7 +16,7 @@ build_script:
   - dotnet build
   - dotnet pack --no-build -o publish -p:PackageVersion=$APPVEYOR_BUILD_VERSION
 test_script:
-  - dotnet test
+  - dotnet test src/Quibble.Xunit.Tests
 deploy:
   - provider: Environment
     name: Nuget v2
