@@ -6,6 +6,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/nrkno/json-quibble-xunit</PackageProjectUrl>
     <RepositoryUrl>https://github.com/nrkno/json-quibble-xunit</RepositoryUrl>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>  
   <ItemGroup>
     <Compile Include="Assert.fs" />
