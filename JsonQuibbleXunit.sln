@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29709.97
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "paket", "paket", "{FD19C014-38B5-41CE-A1CA-CB54235BA6E6}"
+	ProjectSection(SolutionItems) = preProject
+		paket.dependencies = paket.dependencies
+		paket.lock = paket.lock
+	EndProjectSection
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Quibble.Xunit", "src\Quibble.Xunit\Quibble.Xunit.fsproj", "{1BF9BF99-60FE-4869-9A1F-082E4F47FA9E}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Quibble.Xunit.Tests", "src\Quibble.Xunit.Tests\Quibble.Xunit.Tests.fsproj", "{4A9DC23B-CC81-42B8-807E-765C4F563F9E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1BF9BF99-60FE-4869-9A1F-082E4F47FA9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1BF9BF99-60FE-4869-9A1F-082E4F47FA9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1BF9BF99-60FE-4869-9A1F-082E4F47FA9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1BF9BF99-60FE-4869-9A1F-082E4F47FA9E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A9DC23B-CC81-42B8-807E-765C4F563F9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A9DC23B-CC81-42B8-807E-765C4F563F9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A9DC23B-CC81-42B8-807E-765C4F563F9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A9DC23B-CC81-42B8-807E-765C4F563F9E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {41A93E75-D4AE-4661-8D19-BD4790224038}
+	EndGlobalSection
+EndGlobal
