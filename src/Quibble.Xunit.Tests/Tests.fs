@@ -44,6 +44,12 @@ let ``[] vs {} yields a kind mismatch.`` () =
 let ``Missing property yields an object mismatch.`` () =
     let expectedJsonString = """{ "item": "widget", "price": 12.20 }"""
     let actualJsonString = """{ "item": "widget" }"""
-    
     let ex = Assert.Throws<JsonAssertException>(fun () -> Assert.JsonEqual(expectedJsonString, actualJsonString))
     Assert.Equal("Object mismatch at $.\nMissing property:\nprice (number).", ex.UserMessage)
+    
+[<Fact>]
+let ``Additional property yields an object mismatch.`` () =
+    let expectedJsonString = """{ "item": "widget" }"""
+    let actualJsonString = """{ "item": "widget", "price": 12.20 }"""
+    let ex = Assert.Throws<JsonAssertException>(fun () -> Assert.JsonEqual(expectedJsonString, actualJsonString))
+    Assert.Equal("Object mismatch at $.\nAdditional property:\nprice (number).", ex.UserMessage)
