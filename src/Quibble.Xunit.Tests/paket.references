@@ -2,3 +2,4 @@ System.Text.Json
 FSharp.Core
 Quibble
 xunit
+xunit.runner.visualstudio
