@@ -20,7 +20,7 @@ In contrast, Quibble.Xunit understands JSON and will point you directly to the d
 ## F#
 
 ```
-open Quibble.Xunit;
+open Quibble.Xunit
 ```
 
 ### Comparing numbers
