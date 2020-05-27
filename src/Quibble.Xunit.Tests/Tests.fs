@@ -39,3 +39,11 @@ let ``[ 3, 7 ] vs [ 7, 3 ] yields two number value mismatches.`` () =
 let ``[] vs {} yields a kind mismatch.`` () =
     let ex = Assert.Throws<JsonAssertException>(fun () -> Assert.JsonEqual("[]", "{}"))
     Assert.Equal("Kind mismatch at $.\nExpected an empty array but was an object.", ex.UserMessage)
+    
+[<Fact>]
+let ``Missing property yields an object mismatch.`` () =
+    let expectedJsonString = """{ "item": "widget", "price": 12.20 }"""
+    let actualJsonString = """{ "item": "widget" }"""
+    
+    let ex = Assert.Throws<JsonAssertException>(fun () -> Assert.JsonEqual(expectedJsonString, actualJsonString))
+    Assert.Equal("Object mismatch at $.\nMissing property:\nprice (number).", ex.UserMessage)
