@@ -16,7 +16,7 @@
     <PackageReference Include="coverlet.collector" Version="1.0.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Quibble.XUnit\Quibble.XUnit.fsproj" />
+    <ProjectReference Include="..\Quibble.Xunit\Quibble.Xunit.fsproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
