@@ -53,3 +53,13 @@ let ``Additional property yields an object mismatch.`` () =
     let actualJsonString = """{ "item": "widget", "price": 12.20 }"""
     let ex = Assert.Throws<JsonAssertException>(fun () -> Assert.JsonEqual(expectedJsonString, actualJsonString))
     Assert.Equal("Object mismatch at $.\nAdditional property:\nprice (number).", ex.UserMessage)
+    
+[<Fact>]
+let ``String value mismatch at $.books[1].author``() =
+    let expectedJsonString =
+        """{ "books": [ { "title": "Data and Reality", "author": "William Kent" }, { "title": "Thinking Forth", "author": "Leo Brodie" } ] }"""
+    let actualJsonString =
+        """{ "books": [ { "title": "Data and Reality", "author": "William Kent" }, { "title": "Thinking Forth", "author": "Chuck Moore" } ] }"""
+    let ex = Assert.Throws<JsonAssertException>(fun () -> Assert.JsonEqual(expectedJsonString, actualJsonString))
+    Assert.Equal("String value mismatch at $.books[1].author.\nExpected Leo Brodie but was Chuck Moore.", ex.UserMessage)
+
