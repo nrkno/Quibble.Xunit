@@ -2,7 +2,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-  </PropertyGroup>
+    <Description>Quibble.Xunit does XUnit-like asserts for text strings with JSON content.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/nrkno/json-quibble-xunit</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/nrkno/json-quibble-xunit</RepositoryUrl>
+  </PropertyGroup>  
   <ItemGroup>
     <Compile Include="Assert.fs" />
     <None Include="paket.references" />
