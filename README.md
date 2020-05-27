@@ -3,7 +3,7 @@
 
 # Quibble.Xunit
 
-Quibble.Xunit is an extension to XUnit that does asserts on text strings with JSON content. It provides a method `Assert.JsonEqual` that compares strings with JSON content. If the strings do not contain equal JSON content, Quibble.Xunit will point you to the differences.
+Quibble.Xunit is an extension to XUnit that does asserts on text strings with JSON content. It provides a method `Assert.JsonEqual` that compares two strings with JSON content - one with the JSON string we want to check, and one with the JSON we expect to see. If the strings do not contain the same JSON content, Quibble.Xunit will throw an exception and point you to the differences.
 
 # Why Quibble.Xunit?
 
