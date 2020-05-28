@@ -77,17 +77,58 @@ Actual:   { "item": "widget" }
 ### Composite example
 
 ```
-let expected = """{ "books": [ { "title": "Data and Reality", "author": "William Kent" }, { "title": "Thinking Forth", "author": "Leo Brodie" } ] }"""
-let actual = """{ "books": [ { "title": "Data and Reality", "author": "William Kent" }, { "title": "Thinking Forth", "author": "Chuck Moore" } ] }"""
+let expectedJsonString =
+   """{
+    "books": [{
+        "title": "Data and Reality",
+        "author": "William Kent"
+    }, {
+        "title": "Thinking Forth",
+        "author": "Leo Brodie"
+    }]
+}"""
+
+let actualJsonString =
+    """{
+    "books": [{
+        "title": "Data and Reality",
+        "author": "William Kent",
+        "edition": "2nd"
+    }, {
+        "title": "Thinking Forth",
+        "author": "Chuck Moore"
+    }]
+}"""
+
 Assert.JsonEqual(expected, actual)
 ```
 
 throws a `JsonAssertException` and offers the following explanation:
 
 ```
+Object mismatch at $.books[0].
+Additional property:
+edition (string).
 String value mismatch at $.books[1].author.
 Expected Leo Brodie but was Chuck Moore.
-Expected: { "books": [ { "title": "Data and Reality", "author": "William Kent" }, { "title": "Thinking Forth", "author": "Leo Brodie" } ] }
-Actual:   { "books": [ { "title": "Data and Reality", "author": "William Kent" }, { "title": "Thinking Forth", "author": "Chuck Moore" } ] }
+Expected: {
+    "books": [{
+        "title": "Data and Reality",
+        "author": "William Kent"
+    }, {
+        "title": "Thinking Forth",
+        "author": "Leo Brodie"
+    }]
+}
+Actual:   {
+    "books": [{
+        "title": "Data and Reality",
+        "author": "William Kent",
+        "edition": "2nd"
+    }, {
+        "title": "Thinking Forth",
+        "author": "Chuck Moore"
+    }]
+}
    at Quibble.Xunit.Assert.JsonEqual(String expectedJsonString, String actualJsonString)
 ```
