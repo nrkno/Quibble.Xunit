@@ -65,12 +65,21 @@ let ``Missing property yields an object mismatch.`` () =
     Assert.Equal("Object mismatch at $.\nMissing property:\n - 'price' (number)", ex.UserMessage)
     
 [<Fact>]
-let ``Additional property yields an object mismatch.`` () =
+let ``Additional property yields an object mismatch by default.`` () =
     let expectedJsonString = """{ "item": "widget" }"""
     let actualJsonString = """{ "item": "widget", "price": 12.20 }"""
     let ex = Assert.Throws<JsonAssertException>(fun () -> Assert.JsonEqual(expectedJsonString, actualJsonString))
     Assert.Equal("Object mismatch at $.\nAdditional property:\n - 'price' (number)", ex.UserMessage)
-    
+
+[<Fact>]
+let ``Allowing additional properties with config override.`` () =
+    let expectedJsonString = """{ "item": "widget" }"""
+    let actualJsonString = """{ "item": "widget", "price": 12.20 }"""
+    let diffConfig = {
+        allowAdditionalProperties = true
+    }
+    Assert.JsonEqual(expectedJsonString, actualJsonString, diffConfig)
+
 [<Fact>]
 let ``Books example``() =
     let expectedJsonString =
