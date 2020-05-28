@@ -5,6 +5,11 @@
 
 Quibble.Xunit is an extension to XUnit that does asserts on text strings with JSON content. It provides a method `Assert.JsonEqual` that compares two strings with JSON content - one with the JSON string we want to check, and one with the JSON we expect to see. If the strings do not contain the same JSON content, Quibble.Xunit will throw an exception and point you to the differences.
 
+## TL;DR 
+
+* [F# Examples](#f-examples)
+* [C# Examples](#c-examples)
+
 # Why Quibble.Xunit?
 
 We often want to verify that some JSON text matches our expectations. A typical use case is writing tests for a web api that serves JSON responses. Without a JSON diff tool, we have two options: compare the JSON text as strings or deserialize the JSON into a data structure and compare the data structure with your expectations. 
@@ -15,9 +20,7 @@ Deserializing the response before comparing means that you have to write deseria
 
 In contrast, Quibble.Xunit understands JSON and will point you directly to the differences in your JSON documents. Quibble.Xunit uses [JsonPath](https://goessner.net/articles/JsonPath/) syntax to indicate the right locations. In JsonPath syntax, `$` means the root of the document, whereas something like `$.books[1].author` means "the author property of the second element of the books array".
 
-# Examples 
-
-## F#
+# F# Examples
 
 ```
 open Quibble.Xunit
@@ -132,3 +135,7 @@ Actual:   {
 }
    at Quibble.Xunit.Assert.JsonEqual(String expectedJsonString, String actualJsonString)
 ```
+
+# C# Examples
+
+TODO
