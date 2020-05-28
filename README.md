@@ -115,9 +115,9 @@ throws a `JsonAssertException` and offers the following explanation:
 Object mismatch at $.
 Additional properties:
  - 'quantity' (number)
- - 'in stock' (bool).
+ - 'in stock' (bool)
 Missing property:
- - 'price' (number).
+ - 'price' (number)
 Expected: { "item": "widget", "price": 12.20 }
 Actual:   { "item": "widget", "quantity": 88, "in stock": true }
    at Quibble.Xunit.Assert.JsonEqual(String expectedJsonString, String actualJsonString)
@@ -169,7 +169,7 @@ throws a `JsonAssertException` and offers the following explanation:
 Found 2 differences.
 # 1: Object mismatch at $.books[0].
 Additional property:
- - 'edition' (string).
+ - 'edition' (string)
 # 2: String value mismatch at $.books[1].author.
 Expected Leo Brodie but was Chuck Moore.
 Expected: {
