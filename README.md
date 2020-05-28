@@ -171,7 +171,7 @@ Actual:   {}
 ### Composite example
 
 ```
-let expectedJsonString =
+let expected =
    """{
     "books": [{
         "title": "Data and Reality",
@@ -182,7 +182,7 @@ let expectedJsonString =
     }]
 }"""
 
-let actualJsonString =
+let actual =
     """{
     "books": [{
         "title": "Data and Reality",
