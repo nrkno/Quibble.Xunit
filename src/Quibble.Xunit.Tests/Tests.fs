@@ -9,20 +9,25 @@ let ``True vs false yields a boolean value mismatch.`` () =
     Assert.Equal("Boolean value mismatch at $.\nExpected true but was false.", ex.UserMessage)
 
 [<Fact>]
-let ``True vs null yields a kind mismatch.`` () =
+let ``True vs null yields a type mismatch.`` () =
     let ex = Assert.Throws<JsonAssertException>(fun () -> Assert.JsonEqual("true", "null"))
-    Assert.Equal("Kind mismatch at $.\nExpected the boolean true but was null.", ex.UserMessage)
+    Assert.Equal("Type mismatch at $.\nExpected the boolean true but was null.", ex.UserMessage)
 
 [<Fact>]
-let ``True vs 1 yields a kind mismatch.`` () =
+let ``True vs 1 yields a type mismatch.`` () =
     let ex = Assert.Throws<JsonAssertException>(fun () -> Assert.JsonEqual("true", "1"))
-    Assert.Equal("Kind mismatch at $.\nExpected the boolean true but was the number 1.", ex.UserMessage)
+    Assert.Equal("Type mismatch at $.\nExpected the boolean true but was the number 1.", ex.UserMessage)
 
 [<Fact>]
-let ``True vs "true" yields a kind mismatch.`` () =
+let ``True vs "true" yields a type mismatch.`` () =
     let ex = Assert.Throws<JsonAssertException>(fun () -> Assert.JsonEqual("true", "\"true\""))
-    Assert.Equal("Kind mismatch at $.\nExpected the boolean true but was the string true.", ex.UserMessage)
-    
+    Assert.Equal("Type mismatch at $.\nExpected the boolean true but was the string true.", ex.UserMessage)
+
+[<Fact>]
+let ``1 vs 2 yields a number value mismatch.`` () =
+    let ex = Assert.Throws<JsonAssertException>(fun () -> Assert.JsonEqual("1", "2"))
+    Assert.Equal("Number value mismatch at $.\nExpected 1 but was 2.", ex.UserMessage)
+
 [<Fact>]
 let ``[ 3 ] vs [ 3, 7 ] yields an array length mismatch.`` () =
     let ex = Assert.Throws<JsonAssertException>(fun () -> Assert.JsonEqual("[ 3 ]", "[ 3, 7 ]"))
@@ -36,9 +41,9 @@ let ``[ 3, 7 ] vs [ 7, 3 ] yields two number value mismatches.`` () =
     Assert.Equal("Number value mismatch at $[1].\nExpected 7 but was 3.", ex.DiffMessages.[1])
 
 [<Fact>]
-let ``[] vs {} yields a kind mismatch.`` () =
+let ``[] vs {} yields a type mismatch.`` () =
     let ex = Assert.Throws<JsonAssertException>(fun () -> Assert.JsonEqual("[]", "{}"))
-    Assert.Equal("Kind mismatch at $.\nExpected an empty array but was an object.", ex.UserMessage)
+    Assert.Equal("Type mismatch at $.\nExpected an empty array but was an object.", ex.UserMessage)
     
 [<Fact>]
 let ``Missing property yields an object mismatch.`` () =

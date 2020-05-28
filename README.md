@@ -25,6 +25,8 @@ open Quibble.Xunit
 
 ### Comparing numbers
 
+#### Number example: 1 != 2
+
 ```
 Assert.JsonEqual("1", "2")
 ```
@@ -32,17 +34,36 @@ Assert.JsonEqual("1", "2")
 throws a `JsonAssertException` and offers the following explanation:
 
 ```
-Boolean value mismatch at $.
-Expected true but was false.
-Expected: true
-Actual:   false
+Number value mismatch at $.
+Expected 1 but was 2.
+Expected: 1
+Actual:   2
    at Quibble.Xunit.Assert.JsonEqual(String expectedJsonString, String actualJsonString)
 ```
 
-### Comparing arrays
+#### Number example: 1.0 == 1
 
 ```
-Assert.JsonEqual("[ 1 ]", "[ 2, 1 ]")
+Assert.JsonEqual("1.0", "1")
+```
+
+does not protest, since JSON doesn't distinguish between integers and doubles. Hence `1.0` and `1` are just two different ways of writing the same number.
+
+#### Number example: 123.4 vs 1.234E2
+
+```
+Assert.JsonEqual("123.4", "1.234E2")
+```
+
+does not protest either, since JSON supports scientific notation for numbers. Again, `123.4` and `1.234E2` are just two different ways of writing the same number.
+
+
+### Comparing arrays
+
+#### Array example: Number of items
+
+```
+Assert.JsonEqual("[ 3 ]", "[ 3, 7 ]")
 ```
 
 throws a `JsonAssertException` and offers the following explanation:
@@ -50,8 +71,26 @@ throws a `JsonAssertException` and offers the following explanation:
 ```
 Array length mismatch at $.
 Expected 1 item but was 2.
-Expected: [ 1 ]
-Actual:   [ 2, 1 ]
+Expected: [ 3 ]
+Actual:   [ 3, 7 ]
+   at Quibble.Xunit.Assert.JsonEqual(String expectedJsonString, String actualJsonString)
+```
+
+#### Array example: Order matters
+
+```
+Assert.JsonEqual("[ 3, 7 ]", "[ 7, 3 ]")
+```
+
+throws a `JsonAssertException` and offers the following explanation:
+
+```
+Number value mismatch at $[0].
+Expected 3 but was 7.
+Number value mismatch at $[1].
+Expected 7 but was 3.
+Expected: [ 3, 7 ]
+Actual:   [ 7, 3 ]
    at Quibble.Xunit.Assert.JsonEqual(String expectedJsonString, String actualJsonString)
 ```
 
