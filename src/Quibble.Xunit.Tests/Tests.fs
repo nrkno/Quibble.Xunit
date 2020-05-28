@@ -19,6 +19,11 @@ let ``True vs 1 yields a type mismatch.`` () =
     Assert.Equal("Type mismatch at $.\nExpected the boolean true but was the number 1.", ex.UserMessage)
 
 [<Fact>]
+let ``0 vs null yields a type mismatch.`` () =
+    let ex = Assert.Throws<JsonAssertException>(fun () -> Assert.JsonEqual("0", "null"))
+    Assert.Equal("Type mismatch at $.\nExpected the number 0 but was null.", ex.UserMessage)
+
+[<Fact>]
 let ``True vs "true" yields a type mismatch.`` () =
     let ex = Assert.Throws<JsonAssertException>(fun () -> Assert.JsonEqual("true", "\"true\""))
     Assert.Equal("Type mismatch at $.\nExpected the boolean true but was the string true.", ex.UserMessage)

@@ -133,6 +133,40 @@ Assert.JsonEqual(expected, actual)
 
 does not protest, since JSON properties are unordered.
 
+### Comparing apples and oranges 
+
+#### Type mismatch example: number vs null
+
+```
+Assert.JsonEqual("0", "null")
+```
+
+throws a `JsonAssertException` and offers the following explanation:
+
+```
+Type mismatch at $.
+Expected the number 0 but was null.
+Expected: 0
+Actual:   null
+   at Quibble.Xunit.Assert.JsonEqual(String expectedJsonString, String actualJsonString)
+```
+
+#### Type mismatch example: array vs object
+
+```
+Assert.JsonEqual("[]", "{}")
+```
+
+throws a `JsonAssertException` and offers the following explanation:
+
+```
+Type mismatch at $.
+Expected an empty array but was an object.
+Expected: []
+Actual:   {}
+   at Quibble.Xunit.Assert.JsonEqual(String expectedJsonString, String actualJsonString)
+```
+
 
 ### Composite example
 
