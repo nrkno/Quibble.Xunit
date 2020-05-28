@@ -79,7 +79,7 @@ Actual:   [ 3, 7 ]
    at Quibble.Xunit.Assert.JsonEqual(String expectedJsonString, String actualJsonString)
 ```
 
-#### Array example: Order matters
+#### Array example: Item order matters
 
 ```
 Assert.JsonEqual("[ 3, 7 ]", "[ 7, 3 ]")
@@ -99,6 +99,8 @@ Actual:   [ 7, 3 ]
 
 ### Comparing objects
 
+#### Object example: Missing property
+
 ```
 let expected = """{ "item": "widget", "price": 12.20 }"""
 let actual = """{ "item": "widget" }"""
@@ -115,6 +117,17 @@ Expected: { "item": "widget", "price": 12.20 }
 Actual:   { "item": "widget" }
    at Quibble.Xunit.Assert.JsonEqual(String expectedJsonString, String actualJsonString)
 ```
+
+#### Object example: Property order is irrelevant
+
+```
+let expected = """{ "item": "widget", "price": 12.20 }"""
+let actual = """{ "price": 12.20, "item": "widget" }"""
+Assert.JsonEqual(expected, actual)
+```
+
+does not protest, since JSON properties are unordered.
+
 
 ### Composite example
 
