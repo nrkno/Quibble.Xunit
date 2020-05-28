@@ -36,7 +36,7 @@ let ``[ 3 ] vs [ 3, 7 ] yields an array length mismatch.`` () =
 [<Fact>]
 let ``[ 3, 7 ] vs [ 7, 3 ] yields two number value mismatches.`` () =
     let ex = Assert.Throws<JsonAssertException>(fun () -> Assert.JsonEqual("[ 3, 7 ]", "[ 7, 3 ]"))
-    Assert.Equal("Number value mismatch at $[0].\nExpected 3 but was 7.\nNumber value mismatch at $[1].\nExpected 7 but was 3.", ex.UserMessage)
+    Assert.Equal("Found 2 differences.\n# 1: Number value mismatch at $[0].\nExpected 3 but was 7.\n# 2: Number value mismatch at $[1].\nExpected 7 but was 3.", ex.UserMessage)
     Assert.Equal("Number value mismatch at $[0].\nExpected 3 but was 7.", ex.DiffMessages.[0])
     Assert.Equal("Number value mismatch at $[1].\nExpected 7 but was 3.", ex.DiffMessages.[1])
 
@@ -90,5 +90,5 @@ let ``Books example``() =
     }]
 }"""
     let ex = Assert.Throws<JsonAssertException>(fun () -> Assert.JsonEqual(expectedJsonString, actualJsonString))
-    Assert.Equal("Object mismatch at $.books[0].\nAdditional property:\n - 'edition' (string)\nString value mismatch at $.books[1].author.\nExpected Leo Brodie but was Chuck Moore.", ex.UserMessage)
+    Assert.Equal("Found 2 differences.\n# 1: Object mismatch at $.books[0].\nAdditional property:\n - 'edition' (string)\n# 2: String value mismatch at $.books[1].author.\nExpected Leo Brodie but was Chuck Moore.", ex.UserMessage)
 

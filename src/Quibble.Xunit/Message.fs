@@ -120,3 +120,15 @@ module Message =
                 sprintf "Array length mismatch at %s.\nExpected %d %s but was %d." path expectedLength itemsStr actualLength
             | _ ->
                 failwith "A bug."
+
+    let toUserMessage (messages : string list) : string =
+        match messages with
+        | [] -> "No differences"
+        | [ m ] -> m
+        | _ ->
+            let numberOfDifferences = List.length messages
+            let numberedMessages = messages |> List.mapi (fun i m -> sprintf "# %d: %s" (i + 1) m)
+            let header = sprintf "Found %d differences." numberOfDifferences
+            let lines = header :: numberedMessages
+            String.concat "\n" lines
+            

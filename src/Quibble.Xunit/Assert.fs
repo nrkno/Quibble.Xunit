@@ -3,7 +3,7 @@
 open Xunit.Sdk
 
 type JsonAssertException(expected: obj, actual: obj, messages: string list) =
-    inherit AssertActualExpectedException(expected, actual, String.concat "\n" messages)
+    inherit AssertActualExpectedException(expected, actual, Message.toUserMessage messages)
     
     member self.DiffMessages = messages
 

@@ -88,9 +88,10 @@ Assert.JsonEqual("[ 3, 7 ]", "[ 7, 3 ]")
 throws a `JsonAssertException` and offers the following explanation:
 
 ```
-Number value mismatch at $[0].
+Found 2 differences.
+# 1: Number value mismatch at $[0].
 Expected 3 but was 7.
-Number value mismatch at $[1].
+# 2: Number value mismatch at $[1].
 Expected 7 but was 3.
 Expected: [ 3, 7 ]
 Actual:   [ 7, 3 ]
@@ -165,10 +166,11 @@ Assert.JsonEqual(expected, actual)
 throws a `JsonAssertException` and offers the following explanation:
 
 ```
-Object mismatch at $.books[0].
+Found 2 differences.
+# 1: Object mismatch at $.books[0].
 Additional property:
  - 'edition' (string).
-String value mismatch at $.books[1].author.
+# 2: String value mismatch at $.books[1].author.
 Expected Leo Brodie but was Chuck Moore.
 Expected: {
     "books": [{
