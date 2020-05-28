@@ -44,7 +44,14 @@ let ``[ 3, 7 ] vs [ 7, 3 ] yields two number value mismatches.`` () =
 let ``[] vs {} yields a type mismatch.`` () =
     let ex = Assert.Throws<JsonAssertException>(fun () -> Assert.JsonEqual("[]", "{}"))
     Assert.Equal("Type mismatch at $.\nExpected an empty array but was an object.", ex.UserMessage)
-    
+
+[<Fact>]
+let ``Widget property mismatch example.`` () =
+    let expectedJsonString = """{ "item": "widget", "price": 12.20 }"""
+    let actualJsonString = """{ "item": "widget", "quantity": 88, "inStock": true }"""
+    let ex = Assert.Throws<JsonAssertException>(fun () -> Assert.JsonEqual(expectedJsonString, actualJsonString))
+    Assert.Equal("Object mismatch at $.\nAdditional properties:\nquantity (number)\ninStock (bool).\nMissing property:\nprice (number).", ex.UserMessage)
+
 [<Fact>]
 let ``Missing property yields an object mismatch.`` () =
     let expectedJsonString = """{ "item": "widget", "price": 12.20 }"""

@@ -99,11 +99,12 @@ Actual:   [ 7, 3 ]
 
 ### Comparing objects
 
-#### Object example: Missing property
+#### Object example: Property mismatch
 
 ```
 let expected = """{ "item": "widget", "price": 12.20 }"""
-let actual = """{ "item": "widget" }"""
+let actual = """{ "item": "widget", "quantity": 88, "inStock": true }"""
+
 Assert.JsonEqual(expected, actual)
 ```
 
@@ -111,10 +112,13 @@ throws a `JsonAssertException` and offers the following explanation:
 
 ```
 Object mismatch at $.
+Additional properties:
+quantity (number)
+inStock (bool).
 Missing property:
 price (number).
 Expected: { "item": "widget", "price": 12.20 }
-Actual:   { "item": "widget" }
+Actual:   { "item": "widget", "quantity": 88, "inStock": true }
    at Quibble.Xunit.Assert.JsonEqual(String expectedJsonString, String actualJsonString)
 ```
 
