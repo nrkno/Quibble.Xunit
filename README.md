@@ -1,9 +1,14 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/0v6946lhh480cgbk?svg=true)](https://ci.appveyor.com/project/NRKOpensource/json-quibble-xunit)
+[![Build status](https://ci.appveyor.com/api/projects/status/0v6946lhh480cgbk?svg=true)](https://ci.appveyor.com/project/NRKOpensource/quibble-xunit)
 [![NuGet Status](https://img.shields.io/nuget/v/Quibble.Xunit.svg?style=flat)](https://www.nuget.org/packages/Quibble.Xunit/)
 
 # Quibble.Xunit
 
-Quibble.Xunit is an extension to XUnit that does asserts on text strings with JSON content. It provides a method `Assert.JsonEqual` that compares two strings with JSON content - one with the JSON string we want to check, and one with the JSON we expect to see. If the strings do not contain the same JSON content, Quibble.Xunit will throw an exception and point you to the differences.
+Quibble.Xunit is an extension to [xUnit.net](https://xunit.net/) that does asserts on text strings with JSON content. It provides a method `Assert.JsonEqual` that compares two strings with JSON content - one with the JSON string we want to check, and one with the JSON we expect to see. If the strings do not contain the same JSON content, Quibble.Xunit will throw an exception and point you to the differences. It uses [Quibble](https://github.com/nrkno/Quibble) to provide the JSON diff.
+
+## TL;DR 
+
+* [F# Examples](#f-examples)
+* [C# Examples](#c-examples)
 
 # Why Quibble.Xunit?
 
@@ -15,9 +20,7 @@ Deserializing the response before comparing means that you have to write deseria
 
 In contrast, Quibble.Xunit understands JSON and will point you directly to the differences in your JSON documents. Quibble.Xunit uses [JsonPath](https://goessner.net/articles/JsonPath/) syntax to indicate the right locations. In JsonPath syntax, `$` means the root of the document, whereas something like `$.books[1].author` means "the author property of the second element of the books array".
 
-# Examples 
-
-## F#
+# F# Examples
 
 ```
 open Quibble.Xunit
@@ -171,3 +174,7 @@ Actual:   {
 }
    at Quibble.Xunit.Assert.JsonEqual(String expectedJsonString, String actualJsonString)
 ```
+
+# C# Examples
+
+TODO
