@@ -9,6 +9,7 @@
     <IsPackable>true</IsPackable>
   </PropertyGroup>  
   <ItemGroup>
+    <Compile Include="Message.fs" />
     <Compile Include="Assert.fs" />
     <None Include="paket.references" />
   </ItemGroup>

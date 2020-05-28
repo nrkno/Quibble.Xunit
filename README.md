@@ -103,7 +103,7 @@ Actual:   [ 7, 3 ]
 
 ```
 let expected = """{ "item": "widget", "price": 12.20 }"""
-let actual = """{ "item": "widget", "quantity": 88, "inStock": true }"""
+let actual = """{ "item": "widget", "quantity": 88, "in stock": true }"""
 
 Assert.JsonEqual(expected, actual)
 ```
@@ -113,12 +113,12 @@ throws a `JsonAssertException` and offers the following explanation:
 ```
 Object mismatch at $.
 Additional properties:
-quantity (number)
-inStock (bool).
+ - 'quantity' (number)
+ - 'in stock' (bool).
 Missing property:
-price (number).
+ - 'price' (number).
 Expected: { "item": "widget", "price": 12.20 }
-Actual:   { "item": "widget", "quantity": 88, "inStock": true }
+Actual:   { "item": "widget", "quantity": 88, "in stock": true }
    at Quibble.Xunit.Assert.JsonEqual(String expectedJsonString, String actualJsonString)
 ```
 
@@ -167,7 +167,7 @@ throws a `JsonAssertException` and offers the following explanation:
 ```
 Object mismatch at $.books[0].
 Additional property:
-edition (string).
+ - 'edition' (string).
 String value mismatch at $.books[1].author.
 Expected Leo Brodie but was Chuck Moore.
 Expected: {

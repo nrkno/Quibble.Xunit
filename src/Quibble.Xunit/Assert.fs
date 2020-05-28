@@ -13,7 +13,7 @@ module Assert =
     
     let JsonEqual (expectedJsonString: string, actualJsonString: string) : unit =
         let diffs : Diff list = JsonStrings.diff actualJsonString expectedJsonString
-        let messages : string list = diffs |> List.map AssertMessage.toDiffMessage
+        let messages : string list = diffs |> List.map Message.toAssertMessage
         if not (List.isEmpty messages) then
             let ex = JsonAssertException(expectedJsonString, actualJsonString, messages)
             raise ex

@@ -48,23 +48,23 @@ let ``[] vs {} yields a type mismatch.`` () =
 [<Fact>]
 let ``Widget property mismatch example.`` () =
     let expectedJsonString = """{ "item": "widget", "price": 12.20 }"""
-    let actualJsonString = """{ "item": "widget", "quantity": 88, "inStock": true }"""
+    let actualJsonString = """{ "item": "widget", "quantity": 88, "in stock": true }"""
     let ex = Assert.Throws<JsonAssertException>(fun () -> Assert.JsonEqual(expectedJsonString, actualJsonString))
-    Assert.Equal("Object mismatch at $.\nAdditional properties:\nquantity (number)\ninStock (bool).\nMissing property:\nprice (number).", ex.UserMessage)
+    Assert.Equal("Object mismatch at $.\nAdditional properties:\n - 'quantity' (number)\n - 'in stock' (bool)\nMissing property:\n - 'price' (number)", ex.UserMessage)
 
 [<Fact>]
 let ``Missing property yields an object mismatch.`` () =
     let expectedJsonString = """{ "item": "widget", "price": 12.20 }"""
     let actualJsonString = """{ "item": "widget" }"""
     let ex = Assert.Throws<JsonAssertException>(fun () -> Assert.JsonEqual(expectedJsonString, actualJsonString))
-    Assert.Equal("Object mismatch at $.\nMissing property:\nprice (number).", ex.UserMessage)
+    Assert.Equal("Object mismatch at $.\nMissing property:\n - 'price' (number)", ex.UserMessage)
     
 [<Fact>]
 let ``Additional property yields an object mismatch.`` () =
     let expectedJsonString = """{ "item": "widget" }"""
     let actualJsonString = """{ "item": "widget", "price": 12.20 }"""
     let ex = Assert.Throws<JsonAssertException>(fun () -> Assert.JsonEqual(expectedJsonString, actualJsonString))
-    Assert.Equal("Object mismatch at $.\nAdditional property:\nprice (number).", ex.UserMessage)
+    Assert.Equal("Object mismatch at $.\nAdditional property:\n - 'price' (number)", ex.UserMessage)
     
 [<Fact>]
 let ``Books example``() =
@@ -90,5 +90,5 @@ let ``Books example``() =
     }]
 }"""
     let ex = Assert.Throws<JsonAssertException>(fun () -> Assert.JsonEqual(expectedJsonString, actualJsonString))
-    Assert.Equal("Object mismatch at $.books[0].\nAdditional property:\nedition (string).\nString value mismatch at $.books[1].author.\nExpected Leo Brodie but was Chuck Moore.", ex.UserMessage)
+    Assert.Equal("Object mismatch at $.books[0].\nAdditional property:\n - 'edition' (string)\nString value mismatch at $.books[1].author.\nExpected Leo Brodie but was Chuck Moore.", ex.UserMessage)
 
