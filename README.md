@@ -7,7 +7,7 @@ Quibble.Xunit is an extension to [xUnit.net](https://xunit.net/) that does asser
 
 ## TL;DR 
 
-![Comparing JSON](https://user-images.githubusercontent.com/1174441/83283911-42929080-a1dc-11ea-9de2-a3879758d3a4.png)
+![Comparing JSON](https://user-images.githubusercontent.com/1174441/83284025-6b1a8a80-a1dc-11ea-84db-9e69528a3385.png)
 
 ## Jump to examples
 
