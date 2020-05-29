@@ -78,7 +78,7 @@ let ``Allowing additional properties with config override.`` () =
     let diffConfig = {
         allowAdditionalProperties = true
     }
-    Assert.JsonEqual(expectedJsonString, actualJsonString, diffConfig)
+    Assert.JsonEqualOverrideDefault(expectedJsonString, actualJsonString, diffConfig)
 
 [<Fact>]
 let ``Books example``() =

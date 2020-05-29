@@ -12,9 +12,16 @@ type JsonDiffConfig = {
     allowAdditionalProperties: bool
 }
 
-type Assert =
+module Assert =
     
-    static member JsonEqual (expectedJsonString: string, actualJsonString: string, ?maybeDiffConfig : JsonDiffConfig) : unit =
+    let JsonEqual (expectedJsonString: string, actualJsonString: string) : unit =        
+        let diffs : Diff list = JsonStrings.diff actualJsonString expectedJsonString
+        let messages : string list = diffs |> List.map Message.toAssertMessage
+        if not (List.isEmpty messages) then
+            let ex = JsonAssertException(expectedJsonString, actualJsonString, messages)
+            raise ex
+            
+    let JsonEqualOverrideDefault (expectedJsonString: string, actualJsonString: string, diffConfig : JsonDiffConfig) : unit =
         let checkDiffConfig (diffConfig : JsonDiffConfig) (diff : Diff) =
             if diffConfig.allowAdditionalProperties then
                 match diff with
@@ -33,12 +40,8 @@ type Assert =
             else
                 Some diff
         let diffs : Diff list = JsonStrings.diff actualJsonString expectedJsonString
-        let diffs' =
-            match maybeDiffConfig with
-            | None -> diffs
-            | Some cfg -> diffs |> List.choose (checkDiffConfig cfg)
+        let diffs' = diffs |> List.choose (checkDiffConfig diffConfig)
         let messages : string list = diffs' |> List.map Message.toAssertMessage
         if not (List.isEmpty messages) then
             let ex = JsonAssertException(expectedJsonString, actualJsonString, messages)
             raise ex
-
