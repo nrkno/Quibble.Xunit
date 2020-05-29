@@ -10,8 +10,8 @@
   </PropertyGroup>  
   <ItemGroup>
     <Compile Include="Message.fs" />
-    <Compile Include="Assert.fs" />
     <Compile Include="JsonAssert.fs" />
+    <Compile Include="Assert.fs" />
     <None Include="paket.references" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />

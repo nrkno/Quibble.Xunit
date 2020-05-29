@@ -3,7 +3,7 @@
 
 # Quibble.Xunit
 
-Quibble.Xunit is an extension to [xUnit.net](https://xunit.net/) that does asserts on text strings with JSON content. It provides a method `Assert.JsonEqual` that compares two strings with JSON content - one with the JSON string we want to check, and one with the JSON we expect to see. If the strings do not contain the same JSON content, Quibble.Xunit will throw an exception and point you to the differences. It uses [Quibble](https://github.com/nrkno/Quibble) to provide the JSON diff.
+Quibble.Xunit is an extension to [xUnit.net](https://xunit.net/) that does asserts on text strings with JSON content. It provides a method `JsonAssert.Equal` that compares two strings with JSON content - one with the JSON string we want to check, and one with the JSON we expect to see. If the strings do not contain the same JSON content, Quibble.Xunit will throw an exception and point you to the differences. It uses [Quibble](https://github.com/nrkno/Quibble) to provide the JSON diff.
 
 ## TL;DR 
 
@@ -31,7 +31,7 @@ open Quibble.Xunit
 #### Number example: 1 != 2
 
 ```
-Assert.JsonEqual("1", "2")
+JsonAssert.Equal("1", "2")
 ```
 
 throws a `JsonAssertException` and offers the following explanation:
@@ -41,13 +41,13 @@ Number value mismatch at $.
 Expected 1 but was 2.
 Expected: 1
 Actual:   2
-   at Quibble.Xunit.Assert.JsonEqual(String expectedJsonString, String actualJsonString)
+   at Quibble.Xunit.JsonAssert.Equal(String expectedJsonString, String actualJsonString)
 ```
 
 #### Number example: 1.0 == 1
 
 ```
-Assert.JsonEqual("1.0", "1")
+JsonAssert.Equal("1.0", "1")
 ```
 
 does not protest, since JSON doesn't distinguish between integers and doubles. Hence `1.0` and `1` are just two different ways of writing the same number.
@@ -55,7 +55,7 @@ does not protest, since JSON doesn't distinguish between integers and doubles. H
 #### Number example: 123.4 vs 1.234E2
 
 ```
-Assert.JsonEqual("123.4", "1.234E2")
+JsonAssert.Equal("123.4", "1.234E2")
 ```
 
 does not protest either, since JSON supports scientific notation for numbers. Again, `123.4` and `1.234E2` are just two different ways of writing the same number.
@@ -66,7 +66,7 @@ does not protest either, since JSON supports scientific notation for numbers. Ag
 #### Array example: Number of items
 
 ```
-Assert.JsonEqual("[ 3 ]", "[ 3, 7 ]")
+JsonAssert.Equal("[ 3 ]", "[ 3, 7 ]")
 ```
 
 throws a `JsonAssertException` and offers the following explanation:
@@ -76,13 +76,13 @@ Array length mismatch at $.
 Expected 1 item but was 2.
 Expected: [ 3 ]
 Actual:   [ 3, 7 ]
-   at Quibble.Xunit.Assert.JsonEqual(String expectedJsonString, String actualJsonString)
+   at Quibble.Xunit.JsonAssert.Equal(String expectedJsonString, String actualJsonString)
 ```
 
 #### Array example: Item order matters
 
 ```
-Assert.JsonEqual("[ 3, 7 ]", "[ 7, 3 ]")
+JsonAssert.Equal("[ 3, 7 ]", "[ 7, 3 ]")
 ```
 
 throws a `JsonAssertException` and offers the following explanation:
@@ -95,7 +95,7 @@ Expected 3 but was 7.
 Expected 7 but was 3.
 Expected: [ 3, 7 ]
 Actual:   [ 7, 3 ]
-   at Quibble.Xunit.Assert.JsonEqual(String expectedJsonString, String actualJsonString)
+   at Quibble.Xunit.JsonAssert.Equal(String expectedJsonString, String actualJsonString)
 ```
 
 ### Comparing objects
@@ -106,7 +106,7 @@ Actual:   [ 7, 3 ]
 let expected = """{ "item": "widget", "price": 12.20 }"""
 let actual = """{ "item": "widget", "quantity": 88, "in stock": true }"""
 
-Assert.JsonEqual(expected, actual)
+JsonAssert.Equal(expected, actual)
 ```
 
 throws a `JsonAssertException` and offers the following explanation:
@@ -120,7 +120,7 @@ Missing property:
  - 'price' (number)
 Expected: { "item": "widget", "price": 12.20 }
 Actual:   { "item": "widget", "quantity": 88, "in stock": true }
-   at Quibble.Xunit.Assert.JsonEqual(String expectedJsonString, String actualJsonString)
+   at Quibble.Xunit.JsonAssert.Equal(String expectedJsonString, String actualJsonString)
 ```
 
 #### Object example: Property order is irrelevant
@@ -128,7 +128,7 @@ Actual:   { "item": "widget", "quantity": 88, "in stock": true }
 ```
 let expected = """{ "item": "widget", "price": 12.20 }"""
 let actual = """{ "price": 12.20, "item": "widget" }"""
-Assert.JsonEqual(expected, actual)
+JsonAssert.Equal(expected, actual)
 ```
 
 does not protest, since JSON properties are unordered.
@@ -138,7 +138,7 @@ does not protest, since JSON properties are unordered.
 #### Type mismatch example: number vs null
 
 ```
-Assert.JsonEqual("0", "null")
+JsonAssert.Equal("0", "null")
 ```
 
 throws a `JsonAssertException` and offers the following explanation:
@@ -148,13 +148,13 @@ Type mismatch at $.
 Expected the number 0 but was null.
 Expected: 0
 Actual:   null
-   at Quibble.Xunit.Assert.JsonEqual(String expectedJsonString, String actualJsonString)
+   at Quibble.Xunit.JsonAssert.Equal(String expectedJsonString, String actualJsonString)
 ```
 
 #### Type mismatch example: array vs object
 
 ```
-Assert.JsonEqual("[]", "{}")
+JsonAssert.Equal("[]", "{}")
 ```
 
 throws a `JsonAssertException` and offers the following explanation:
@@ -164,7 +164,7 @@ Type mismatch at $.
 Expected an empty array but was an object.
 Expected: []
 Actual:   {}
-   at Quibble.Xunit.Assert.JsonEqual(String expectedJsonString, String actualJsonString)
+   at Quibble.Xunit.JsonAssert.Equal(String expectedJsonString, String actualJsonString)
 ```
 
 
@@ -194,7 +194,7 @@ let actual =
     }]
 }"""
 
-Assert.JsonEqual(expected, actual)
+JsonAssert.Equal(expected, actual)
 ```
 
 throws a `JsonAssertException` and offers the following explanation:
@@ -225,7 +225,7 @@ Actual:   {
         "author": "Chuck Moore"
     }]
 }
-   at Quibble.Xunit.Assert.JsonEqual(String expectedJsonString, String actualJsonString)
+   at Quibble.Xunit.JsonAssert.Equal(String expectedJsonString, String actualJsonString)
 ```
 
 # C# Examples
