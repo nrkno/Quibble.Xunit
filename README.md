@@ -22,7 +22,7 @@ Comparing JSON text as strings may be acceptable for very small JSON documents, 
 
 Deserializing the response before comparing means that you have to write deserialization code (which may or may not be trivial) and in addition means you're comparing something else than what you really wanted to compare. In addition, you essentially have the same problem as with comparing strings. It is easy enough to check whether or not two objects deserialized from JSON are equal, but harder to figure out exactly how they're different if they are. Unless you want to peek into properties in your debugger, you must typically implement a suitable comparison mechanism if you want more detailed information. 
 
-In contrast, Quibble.Xunit understands JSON and will point you directly to the differences in your JSON documents. Quibble.Xunit uses [JsonPath](https://goessner.net/articles/JsonPath/) syntax to indicate the right locations. In JsonPath syntax, `$` means the root of the document, whereas something like `$.books[1].author` means "the author property of the second element of the books array".
+In contrast, Quibble.Xunit understands JSON and will point you directly to the differences in your JSON documents. Quibble.Xunit uses [JSONPath](https://goessner.net/articles/JsonPath/) syntax to indicate the right locations. In JsonPath syntax, `$` means the root of the document, whereas something like `$.books[1].author` means "the author property of the second element of the books array".
 
 # F# Examples
 
