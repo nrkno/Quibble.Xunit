@@ -7,6 +7,10 @@ Quibble.Xunit is an extension to [xUnit.net](https://xunit.net/) that does asser
 
 ## TL;DR 
 
+![Comparing JSON](https://user-images.githubusercontent.com/1174441/83239150-bd858800-a197-11ea-91a6-5302b8e14974.png)
+
+## Jump to examples
+
 * [F# Examples](#f-examples)
 * [C# Examples](#c-examples)
 
@@ -21,6 +25,10 @@ Deserializing the response before comparing means that you have to write deseria
 In contrast, Quibble.Xunit understands JSON and will point you directly to the differences in your JSON documents. Quibble.Xunit uses [JsonPath](https://goessner.net/articles/JsonPath/) syntax to indicate the right locations. In JsonPath syntax, `$` means the root of the document, whereas something like `$.books[1].author` means "the author property of the second element of the books array".
 
 # F# Examples
+
+```
+dotnet add package Quibble.Xunit
+```
 
 ```
 open Quibble.Xunit
@@ -230,4 +238,212 @@ Actual:   {
 
 # C# Examples
 
-TODO
+```
+dotnet add package Quibble.Xunit
+```
+
+```
+using Quibble.Xunit
+```
+
+### Comparing numbers
+
+#### Number example: 1 != 2
+
+```
+Assert.JsonEqual("1", "2");
+```
+
+throws a `JsonAssertException` and offers the following explanation:
+
+```
+Number value mismatch at $.
+Expected 1 but was 2.
+Expected: 1
+Actual:   2
+   at Quibble.Xunit.Assert.JsonEqual(String expectedJsonString, String actualJsonString)
+```
+
+#### Number example: 1.0 == 1
+
+```
+Assert.JsonEqual("1.0", "1");
+```
+
+does not protest, since JSON doesn't distinguish between integers and doubles. Hence `1.0` and `1` are just two different ways of writing the same number.
+
+#### Number example: 123.4 vs 1.234E2
+
+```
+Assert.JsonEqual("123.4", "1.234E2")
+```
+
+does not protest either, since JSON supports scientific notation for numbers. Again, `123.4` and `1.234E2` are just two different ways of writing the same number.
+
+
+### Comparing arrays
+
+#### Array example: Number of items
+
+```
+Assert.JsonEqual("[ 3 ]", "[ 3, 7 ]")
+```
+
+throws a `JsonAssertException` and offers the following explanation:
+
+```
+Array length mismatch at $.
+Expected 1 item but was 2.
+Expected: [ 3 ]
+Actual:   [ 3, 7 ]
+   at Quibble.Xunit.Assert.JsonEqual(String expectedJsonString, String actualJsonString)
+```
+
+#### Array example: Item order matters
+
+```
+Assert.JsonEqual("[ 3, 7 ]", "[ 7, 3 ]")
+```
+
+throws a `JsonAssertException` and offers the following explanation:
+
+```
+Found 2 differences.
+# 1: Number value mismatch at $[0].
+Expected 3 but was 7.
+# 2: Number value mismatch at $[1].
+Expected 7 but was 3.
+Expected: [ 3, 7 ]
+Actual:   [ 7, 3 ]
+   at Quibble.Xunit.Assert.JsonEqual(String expectedJsonString, String actualJsonString)
+```
+
+### Comparing objects
+
+#### Object example: Property mismatch
+
+```
+var expected = @"{ ""item"": ""widget"", ""price"": 12.20 }";
+var actual = @"{ ""item"": ""widget"", ""quantity"": 88, ""in stock"": true }";
+
+Assert.JsonEqual(expected, actual);
+```
+
+throws a `JsonAssertException` and offers the following explanation:
+
+```
+Object mismatch at $.
+Additional properties:
+ - 'quantity' (number)
+ - 'in stock' (bool)
+Missing property:
+ - 'price' (number)
+Expected: { "item": "widget", "price": 12.20 }
+Actual:   { "item": "widget", "quantity": 88, "in stock": true }
+   at Quibble.Xunit.Assert.JsonEqual(String expectedJsonString, String actualJsonString)
+```
+
+#### Object example: Property order is irrelevant
+
+```
+var expected = @"{ ""item"": ""widget"", ""price"": 12.20 }";
+var actual = @"{  ""price"": 12.20,  ""item"": ""widget"" }";
+
+Assert.JsonEqual(expected, actual)
+```
+
+does not protest, since JSON properties are unordered.
+
+### Comparing apples and oranges 
+
+#### Type mismatch example: number vs null
+
+```
+Assert.JsonEqual("0", "null");
+```
+
+throws a `JsonAssertException` and offers the following explanation:
+
+```
+Type mismatch at $.
+Expected the number 0 but was null.
+Expected: 0
+Actual:   null
+   at Quibble.Xunit.Assert.JsonEqual(String expectedJsonString, String actualJsonString)
+```
+
+#### Type mismatch example: array vs object
+
+```
+Assert.JsonEqual("[]", "{}");
+```
+
+throws a `JsonAssertException` and offers the following explanation:
+
+```
+Type mismatch at $.
+Expected an empty array but was an object.
+Expected: []
+Actual:   {}
+   at Quibble.Xunit.Assert.JsonEqual(String expectedJsonString, String actualJsonString)
+```
+
+### Composite example
+
+```
+var expected = 
+    @"{
+        ""books"": [{
+            ""title"": ""Data and Reality"",
+            ""author"": ""William Kent"" 
+        }, {
+            ""title"": ""Thinking Forth"",
+            ""author"": ""Leo Brodie""
+        }]
+    }";
+
+var actual =
+    @"{
+        ""books"": [{
+            ""title"": ""Data and Reality"",
+            ""author"": ""William Kent"",
+            ""edition"": ""2nd""
+        }, {
+            ""title"": ""Thinking Forth"",
+            ""author"": ""Chuck Moore""
+        }]
+    }";
+Assert.JsonEqual(expected, actual);
+```
+
+throws a `JsonAssertException` and offers the following explanation:
+
+```
+Found 2 differences.
+# 1: Object mismatch at $.books[0].
+Additional property:
+ - 'edition' (string)
+# 2: String value mismatch at $.books[1].author.
+Expected Leo Brodie but was Chuck Moore.
+Expected: {
+    "books": [{
+        "title": "Data and Reality",
+        "author": "William Kent"
+    }, {
+        "title": "Thinking Forth",
+        "author": "Leo Brodie"
+    }]
+}
+Actual:   {
+    "books": [{
+        "title": "Data and Reality",
+        "author": "William Kent",
+        "edition": "2nd"
+    }, {
+        "title": "Thinking Forth",
+        "author": "Chuck Moore"
+    }]
+}
+   at Quibble.Xunit.Assert.JsonEqual(String expectedJsonString, String actualJsonString)
+```
+
