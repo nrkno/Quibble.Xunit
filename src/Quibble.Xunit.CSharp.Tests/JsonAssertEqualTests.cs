@@ -29,7 +29,7 @@ namespace Quibble.Xunit.CSharp.Tests
             ""author"": ""Chuck Moore""
         }]
     }";
-            JsonAssert.Equal(expected, actual);
+            var ex = Assert.Throws<JsonAssertException>(() => JsonAssert.Equal(expected, actual));
         }
     }
 }

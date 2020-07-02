@@ -23,7 +23,7 @@ module Message =
     let toAssertMessage (diff: Diff): string =
         match diff with
         | Properties ({ Path = path; Left = _; Right = _ }, mismatches) ->
-            let propString (p: string, v: JsonValue): string =
+            let propString (op: string) (p: string, v: JsonValue): string =
                 let typeStr =
                     match v with
                     | JsonValue.True
@@ -36,7 +36,7 @@ module Message =
                     | JsonValue.Undefined
                     | _ -> "undefined"
 
-                sprintf " - '%s' (%s)" p typeStr
+                sprintf " %s '%s' (%s)" op p typeStr
 
             let justMissing =
                 function
@@ -51,12 +51,12 @@ module Message =
             let additionals: string list =
                 mismatches
                 |> List.choose justAdditional
-                |> List.map propString
+                |> List.map (propString "+")
 
             let missings: string list =
                 mismatches
                 |> List.choose justMissing
-                |> List.map propString
+                |> List.map (propString "-")
 
             let maybeAdditionalsStr =
                 if additionals.IsEmpty then
@@ -79,8 +79,8 @@ module Message =
                     <| sprintf "Missing %s:\n%s" text (String.concat "\n" missings)
 
             let details =
-                [ maybeAdditionalsStr
-                  maybeMissingsStr ]
+                [ maybeMissingsStr
+                  maybeAdditionalsStr ]
                 |> List.choose id
                 |> String.concat "\n"
 
@@ -108,18 +108,72 @@ module Message =
                 let expectedMessage = toValueDescription expected
                 let actualMessage = toValueDescription actual
                 sprintf "Type mismatch at %s.\nExpected %s but was %s." path expectedMessage actualMessage
-        | ItemCount { Path = path; Left = actual; Right = expected } ->
-            match (actual, expected) with
-            | (Array actualItems, Array expectedItems) ->
-                let expectedLength = expectedItems |> List.length
-                let actualLength = actualItems |> List.length 
+        | Items ({ Path = path; Left = _; Right = _ }, mismatches) ->
+            let itemString (op : string) (ix: int, v: JsonValue): string =
+                let typeStr jv =
+                    match jv with
+                    | JsonValue.True -> "the boolean true"
+                    | JsonValue.False -> "the boolean false"
+                    | JsonValue.String s ->
+                        let truncate (maxlen : int) (str : string) =
+                            let len = String.length str
+                            if len > maxlen then
+                                let truncInfo = sprintf "[%d more]" (len - maxlen) 
+                                sprintf "%s %s" (str.Substring(0, maxlen)) truncInfo
+                            else str                                
+                        sprintf "the string %s" (truncate 30 s)
+                    | JsonValue.Number (_, t) -> sprintf "the number %s" t
+                    | JsonValue.Object _ -> "an object"
+                    | JsonValue.Array _ -> "an array"
+                    | JsonValue.Null -> "null"
+                    | JsonValue.Undefined
+                    | _ -> "undefined"                
+                sprintf " %s [%d]: %s" op ix (typeStr v)
 
-                let itemsStr =
-                    if expectedLength = 1 then "item" else "items"
+            let additionals: string list =
+                let justAdditional =
+                    function
+                    | RightOnlyItem _ -> None
+                    | LeftOnlyItem (n, v) -> Some (n, v)
+                mismatches
+                |> List.choose justAdditional
+                |> List.map (itemString "+")
 
-                sprintf "Array length mismatch at %s.\nExpected %d %s but was %d." path expectedLength itemsStr actualLength
-            | _ ->
-                failwith "A bug."
+            let missings: string list =
+                let justMissing =
+                    function
+                    | RightOnlyItem (n, v) -> Some (n, v)
+                    | LeftOnlyItem _ -> None
+                mismatches
+                |> List.choose justMissing
+                |> List.map (itemString "-")
+
+            let maybeAdditionalsStr =
+                if additionals.IsEmpty then
+                    None
+                else
+                    let text =
+                        if List.length additionals = 1 then "item" else "items"
+                    Some
+                    <| sprintf "Additional %s:\n%s" text (String.concat "\n" additionals)
+
+            let maybeMissingsStr =
+                if missings.IsEmpty then
+                    None
+                else
+                    let text =
+                        if List.length missings = 1 then "item" else "items"
+
+                    Some
+                    <| sprintf "Missing %s:\n%s" text (String.concat "\n" missings)
+
+            let details =
+                [ maybeMissingsStr
+                  maybeAdditionalsStr ]
+                |> List.choose id
+                |> String.concat "\n"
+
+            sprintf "Array mismatch at %s.\n%s" path details
 
     let toUserMessage (messages : string list) : string =
         match messages with

@@ -34,16 +34,30 @@ let ``1 vs 2 yields a number value mismatch.`` () =
     Assert.Equal("Number value mismatch at $.\nExpected 1 but was 2.", ex.UserMessage)
 
 [<Fact>]
-let ``[ 3 ] vs [ 3, 7 ] yields an array length mismatch.`` () =
+let ``[ 3 ] vs [ 3, 7 ] yields an array mismatch with one additional item.`` () =
     let ex = Assert.Throws<JsonAssertException>(fun () -> JsonAssert.Equal("[ 3 ]", "[ 3, 7 ]"))
-    Assert.Equal("Array length mismatch at $.\nExpected 1 item but was 2.", ex.UserMessage)
+    Assert.Equal("Array mismatch at $.\nAdditional item:\n + [1]: the number 7", ex.UserMessage)
     
 [<Fact>]
-let ``[ 3, 7 ] vs [ 7, 3 ] yields two number value mismatches.`` () =
+let ``[ 3, 7 ] vs [ 7, 3 ] yields an array mismatch with one missing and one additional item.`` () =
+    // [ 3 ] is picked as the common sublist.
     let ex = Assert.Throws<JsonAssertException>(fun () -> JsonAssert.Equal("[ 3, 7 ]", "[ 7, 3 ]"))
-    Assert.Equal("Found 2 differences.\n# 1: Number value mismatch at $[0].\nExpected 3 but was 7.\n# 2: Number value mismatch at $[1].\nExpected 7 but was 3.", ex.UserMessage)
-    Assert.Equal("Number value mismatch at $[0].\nExpected 3 but was 7.", ex.DiffMessages.[0])
-    Assert.Equal("Number value mismatch at $[1].\nExpected 7 but was 3.", ex.DiffMessages.[1])
+    Assert.Equal("Array mismatch at $.\nMissing item:\n - [1]: the number 7\nAdditional item:\n + [0]: the number 7", ex.UserMessage)
+
+[<Fact>]
+let ``[ 3, 7 ] vs [ 3, 5 ] yields a value difference at the appropriate index.`` () =
+    let ex = Assert.Throws<JsonAssertException>(fun () -> JsonAssert.Equal("[ 3, 7 ]", "[ 3, 5 ]"))
+    Assert.Equal("Number value mismatch at $[1].\nExpected 7 but was 5.", ex.UserMessage)
+
+[<Fact>]
+let ``[] vs [ 3, 7 ] yields an array mismatch with two additional items.`` () =
+    let ex = Assert.Throws<JsonAssertException>(fun () -> JsonAssert.Equal("[]", "[ 3, 7 ]"))
+    Assert.Equal("Array mismatch at $.\nAdditional items:\n + [0]: the number 3\n + [1]: the number 7", ex.UserMessage)
+
+[<Fact>]
+let ``[ 3, 7 ] vs [] yields an array mismatch with two missing items.`` () =
+    let ex = Assert.Throws<JsonAssertException>(fun () -> JsonAssert.Equal("[ 3, 7 ]", "[]"))
+    Assert.Equal("Array mismatch at $.\nMissing items:\n - [0]: the number 3\n - [1]: the number 7", ex.UserMessage)
 
 [<Fact>]
 let ``[] vs {} yields a type mismatch.`` () =
@@ -55,7 +69,7 @@ let ``Widget property mismatch example.`` () =
     let expectedJsonString = """{ "item": "widget", "price": 12.20 }"""
     let actualJsonString = """{ "item": "widget", "quantity": 88, "in stock": true }"""
     let ex = Assert.Throws<JsonAssertException>(fun () -> JsonAssert.Equal(expectedJsonString, actualJsonString))
-    Assert.Equal("Object mismatch at $.\nAdditional properties:\n - 'quantity' (number)\n - 'in stock' (bool)\nMissing property:\n - 'price' (number)", ex.UserMessage)
+    Assert.Equal("Object mismatch at $.\nMissing property:\n - 'price' (number)\nAdditional properties:\n + 'quantity' (number)\n + 'in stock' (bool)", ex.UserMessage)
 
 [<Fact>]
 let ``Missing property yields an object mismatch.`` () =
@@ -69,7 +83,7 @@ let ``Additional property yields an object mismatch by default.`` () =
     let expectedJsonString = """{ "item": "widget" }"""
     let actualJsonString = """{ "item": "widget", "price": 12.20 }"""
     let ex = Assert.Throws<JsonAssertException>(fun () -> JsonAssert.Equal(expectedJsonString, actualJsonString))
-    Assert.Equal("Object mismatch at $.\nAdditional property:\n - 'price' (number)", ex.UserMessage)
+    Assert.Equal("Object mismatch at $.\nAdditional property:\n + 'price' (number)", ex.UserMessage)
 
 [<Fact>]
 let ``Allowing additional properties with config override.`` () =
@@ -104,4 +118,133 @@ let ``Books example``() =
     }]
 }"""
     let ex = Assert.Throws<JsonAssertException>(fun () -> JsonAssert.Equal(expectedJsonString, actualJsonString))
-    Assert.Equal("Found 2 differences.\n# 1: Object mismatch at $.books[0].\nAdditional property:\n - 'edition' (string)\n# 2: String value mismatch at $.books[1].author.\nExpected Leo Brodie but was Chuck Moore.", ex.UserMessage)
+    Assert.Equal("Found 2 differences.\n# 1: Object mismatch at $.books[0].\nAdditional property:\n + 'edition' (string)\n# 2: String value mismatch at $.books[1].author.\nExpected Leo Brodie but was Chuck Moore.", ex.UserMessage)
+
+[<Fact>]
+let ``Long array example - with single replacement``() =
+    let expectedJsonString =
+        """[{
+    "title": "Data and Reality",
+    "author": "William Kent"
+}, {
+    "title": "Thinking Forth",
+    "author": "Leo Brodie"
+}, {
+    "title": "Programmers at Work",
+    "author": "Susan Lammers"
+}, {
+    "title": "The Little Schemer",
+    "authors": [ "Daniel Friedman", "Mattias Fellesian" ]
+}, {
+    "title": "Object Design",
+    "authors": [ "Rebecca Wirfs-Brock", "Alan McKean" ]
+}, {
+    "title": "Domain Modelling made Functional",
+    "author": "Scott Wlaschin"
+}, {
+    "title": "The Psychology of Computer Programming",
+    "author": "Gerald M. Weinberg"
+}, {
+    "title": "Exercises in Programming Style",
+    "author": "Cristina Videira Lopes"
+}, {
+    "title": "Land of Lisp",
+    "author": "Conrad Barski"
+}]"""
+    let actualJsonString =
+        """[{
+    "title": "Data and Reality",
+    "author": "William Kent"
+}, {
+    "title": "Thinking Forth",
+    "author": "Leo Brodie"
+}, {
+    "title": "Coders at Work",
+    "author": "Peter Seibel"
+}, {
+    "title": "The Little Schemer",
+    "authors": [ "Daniel Friedman", "Mattias Fellesian" ]
+}, {
+    "title": "Object Design",
+    "authors": [ "Rebecca Wirfs-Brock", "Alan McKean" ]
+}, {
+    "title": "Domain Modelling made Functional",
+    "author": "Scott Wlaschin"
+}, {
+    "title": "The Psychology of Computer Programming",
+    "author": "Gerald M. Weinberg"
+}, {
+    "title": "Exercises in Programming Style",
+    "author": "Cristina Videira Lopes"
+}, {
+    "title": "Land of Lisp",
+    "author": "Conrad Barski"
+}]"""
+    let ex = Assert.Throws<JsonAssertException>(fun () -> JsonAssert.Equal(expectedJsonString, actualJsonString))
+    Assert.Equal("Found 2 differences.\n# 1: String value mismatch at $[2].title.\nExpected Programmers at Work but was Coders at Work.\n# 2: String value mismatch at $[2].author.\nExpected Susan Lammers but was Peter Seibel.", ex.UserMessage)
+
+[<Fact>]
+let ``Long array example - with modifications``() =
+    let expectedJsonString =
+        """[{
+    "title": "Data and Reality",
+    "author": "William Kent"
+}, {
+    "title": "Thinking Forth",
+    "author": "Leo Brodie"
+}, {
+    "title": "Programmers at Work",
+    "author": "Susan Lammers"
+}, {
+    "title": "The Little Schemer",
+    "authors": [ "Daniel Friedman", "Mattias Fellesian" ]
+}, {
+    "title": "Object Design",
+    "authors": [ "Rebecca Wirfs-Brock", "Alan McKean" ]
+}, {
+    "title": "Domain Modelling made Functional",
+    "author": "Scott Wlaschin"
+}, {
+    "title": "The Psychology of Computer Programming",
+    "author": "Gerald M. Weinberg"
+}, {
+    "title": "Exercises in Programming Style",
+    "author": "Cristina Videira Lopes"
+}, {
+    "title": "Land of Lisp",
+    "author": "Conrad Barski"
+}]"""
+    let actualJsonString =
+        """[{
+    "title": "Data and Reality",
+    "author": "William Kent"
+}, {
+    "title": "Thinking Forth",
+    "author": "Leo Brodie"
+}, {
+    "title": "Coders at Work",
+    "author": "Peter Seibel"
+}, {
+    "title": "The Little Schemer",
+    "authors": [ "Daniel Friedman", "Mattias Fellesian" ]
+}, {
+    "title": "Object Design",
+    "authors": [ "Rebecca Wirfs-Brock", "Alan McKean" ]
+}, {
+    "title": "Domain Modelling made Functional",
+    "author": "Scott Wlaschin"
+}, {
+    "title": "The Psychology of Computer Programming",
+    "author": "Gerald M. Weinberg"
+}, {
+    "title": "Turtle Geometry",
+    "authors": [ "Hal Abelson", "Andrea diSessa" ]
+}, {
+    "title": "Exercises in Programming Style",
+    "author": "Cristina Videira Lopes"
+}, {
+    "title": "Land of Lisp",
+    "author": "Conrad Barski"
+}]"""
+    let ex = Assert.Throws<JsonAssertException>(fun () -> JsonAssert.Equal(expectedJsonString, actualJsonString))
+    Assert.Equal("Array mismatch at $.\nMissing item:\n - [2]: an object\nAdditional items:\n + [2]: an object\n + [7]: an object", ex.UserMessage)
