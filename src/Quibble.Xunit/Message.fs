@@ -4,6 +4,34 @@ module Message =
 
     open Quibble
     
+    let private toObjectSummary (props : (string * JsonValue) list) : string =
+        let toPropLine (p: string, v : JsonValue) : string =
+            let valueStr =
+                match v with 
+                | JsonValue.True -> "true"
+                | JsonValue.False -> "false"
+                | JsonValue.String s -> sprintf "'%s'" s
+                | JsonValue.Number (_, t) -> t
+                | JsonValue.Array items ->
+                    let itemCount = items |> List.length
+                    match itemCount with
+                    | 0 -> "[]"
+                    | 1 -> "[ 1 item ]"
+                    | n -> sprintf "[ %d items ]" n
+                | JsonValue.Object props ->
+                    let propCount = props |> List.length
+                    match propCount with
+                    | 0 -> "{}"
+                    | 1 -> "{ 1 property }"
+                    | n -> sprintf "{ %d properties }" n
+                | JsonValue.Null -> "null"
+                | JsonValue.Undefined -> "undefined"
+            sprintf "  '%s': %s" p valueStr
+        let propLines = props |> List.map toPropLine
+        let lines = [ "{" ] @ propLines @ [ "}" ]
+        let result = String.concat "\n" lines
+        result
+    
     let private toValueDescription (e: JsonValue): string =
         match e with
         | JsonValue.True -> "the boolean true"
@@ -16,7 +44,7 @@ module Message =
             | 0 -> "an empty array"
             | 1 -> "an array with 1 item"
             | _ -> sprintf "an array with %i items" itemCount
-        | JsonValue.Object _ -> "an object"
+        | JsonValue.Object props -> "an object"
         | JsonValue.Null -> "null"
         | _ -> "something else"
 
@@ -123,7 +151,7 @@ module Message =
                             else str                                
                         sprintf "the string %s" (truncate 30 s)
                     | JsonValue.Number (_, t) -> sprintf "the number %s" t
-                    | JsonValue.Object _ -> "an object"
+                    | JsonValue.Object props -> toObjectSummary props
                     | JsonValue.Array _ -> "an array"
                     | JsonValue.Null -> "null"
                     | JsonValue.Undefined

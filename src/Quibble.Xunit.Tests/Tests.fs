@@ -247,4 +247,5 @@ let ``Long array example - with modifications``() =
     "author": "Conrad Barski"
 }]"""
     let ex = Assert.Throws<JsonAssertException>(fun () -> JsonAssert.Equal(expectedJsonString, actualJsonString))
-    Assert.Equal("Array mismatch at $.\nMissing item:\n - [2]: an object\nAdditional items:\n + [2]: an object\n + [7]: an object", ex.UserMessage)
+    Assert.Equal("Array mismatch at $.\nMissing item:\n - [2]: {\n  'title': 'Programmers at Work'\n  'author': 'Susan Lammers'\n}\nAdditional items:\n + [2]: {\n  'title': 'Coders at Work'\n  'author': 'Peter Seibel'\n}\n + [7]: {\n  'title': 'Turtle Geometry'\n  'authors': [ 2 items ]\n}", ex.UserMessage)
+
