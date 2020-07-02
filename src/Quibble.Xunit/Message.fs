@@ -31,6 +31,34 @@ module Message =
         let lines = [ "{" ] @ propLines @ [ "}" ]
         let result = String.concat "\n" lines
         result
+        
+    let private toArraySummary (items : JsonValue list) : string =
+        let toItemLine (v : JsonValue) : string =
+            let valueStr =
+                match v with 
+                | JsonValue.True -> "true"
+                | JsonValue.False -> "false"
+                | JsonValue.String s -> sprintf "'%s'" s
+                | JsonValue.Number (_, t) -> t
+                | JsonValue.Array items ->
+                    let itemCount = items |> List.length
+                    match itemCount with
+                    | 0 -> "[]"
+                    | 1 -> "[ 1 item ]"
+                    | n -> sprintf "[ %d items ]" n
+                | JsonValue.Object props ->
+                    let propCount = props |> List.length
+                    match propCount with
+                    | 0 -> "{}"
+                    | 1 -> "{ 1 property }"
+                    | n -> sprintf "{ %d properties }" n
+                | JsonValue.Null -> "null"
+                | JsonValue.Undefined -> "undefined"
+            sprintf "  %s" valueStr
+        let itemLines = items |> List.map toItemLine
+        let lines = [ "[" ] @ itemLines @ [ "]" ]
+        let result = String.concat "\n" lines
+        result
     
     let private toValueDescription (e: JsonValue): string =
         match e with
@@ -44,7 +72,7 @@ module Message =
             | 0 -> "an empty array"
             | 1 -> "an array with 1 item"
             | _ -> sprintf "an array with %i items" itemCount
-        | JsonValue.Object props -> "an object"
+        | JsonValue.Object _ -> "an object"
         | JsonValue.Null -> "null"
         | _ -> "something else"
 
@@ -152,7 +180,7 @@ module Message =
                         sprintf "the string %s" (truncate 30 s)
                     | JsonValue.Number (_, t) -> sprintf "the number %s" t
                     | JsonValue.Object props -> toObjectSummary props
-                    | JsonValue.Array _ -> "an array"
+                    | JsonValue.Array items -> toArraySummary items
                     | JsonValue.Null -> "null"
                     | JsonValue.Undefined
                     | _ -> "undefined"                

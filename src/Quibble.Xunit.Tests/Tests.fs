@@ -249,3 +249,32 @@ let ``Long array example - with modifications``() =
     let ex = Assert.Throws<JsonAssertException>(fun () -> JsonAssert.Equal(expectedJsonString, actualJsonString))
     Assert.Equal("Array mismatch at $.\nMissing item:\n - [2]: {\n  'title': 'Programmers at Work'\n  'author': 'Susan Lammers'\n}\nAdditional items:\n + [2]: {\n  'title': 'Coders at Work'\n  'author': 'Peter Seibel'\n}\n + [7]: {\n  'title': 'Turtle Geometry'\n  'authors': [ 2 items ]\n}", ex.UserMessage)
 
+[<Fact>]
+let ``Long array example - with arrays``() =
+    let expectedJsonString =
+        """[ 
+[ "Data and Reality", "William Kent" ],
+[ "Thinking Forth", "Leo Brodie" ],
+[ "Programmers at Work", "Susan Lammers" ],
+[ "The Little Schemer", "Daniel P Friedman", "Matthias Felleisen" ],
+[ "Object Design", "Rebecca Wirfs-Brock", "Alan McKean" ],
+[ "Domain Modelling made Functional", "Scott Wlaschin" ],
+[ "The Psychology of Computer Programming", "Gerald M. Weinberg" ],
+[ "Exercises in Programming Style", "Cristina Videira Lopes" ],
+[ "Land of Lisp", "Conrad Barski" ]
+]"""
+    let actualJsonString =
+        """[
+[ "Data and Reality", "William Kent" ],
+[ "Thinking Forth", "Leo Brodie" ],
+[ "Coders at Work", "Peter Seibel" ],
+[ "The Little Schemer", "Daniel P Friedman", "Matthias Felleisen" ],
+[ "Object Design", "Rebecca Wirfs-Brock", "Alan McKean" ],
+[ "Domain Modelling made Functional", "Scott Wlaschin" ],
+[ "The Psychology of Computer Programming", "Gerald M. Weinberg" ],
+[ "Turtle Geometry", "Hal Abelson", "Andrea diSessa" ],
+[ "Exercises in Programming Style", "Cristina Videira Lopes" ],
+[ "Land of Lisp", "Conrad Barski" ]
+]"""
+    let ex = Assert.Throws<JsonAssertException>(fun () -> JsonAssert.Equal(expectedJsonString, actualJsonString))
+    Assert.Equal("Array mismatch at $.\nMissing item:\n - [2]: [\n  'Programmers at Work'\n  'Susan Lammers'\n]\nAdditional items:\n + [2]: [\n  'Coders at Work'\n  'Peter Seibel'\n]\n + [7]: [\n  'Turtle Geometry'\n  'Hal Abelson'\n  'Andrea diSessa'\n]", ex.UserMessage)
