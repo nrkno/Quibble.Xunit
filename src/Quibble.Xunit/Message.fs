@@ -8,24 +8,24 @@ module Message =
         let toPropLine (p: string, v : JsonValue) : string =
             let valueStr =
                 match v with 
-                | JsonValue.True -> "true"
-                | JsonValue.False -> "false"
-                | JsonValue.String s -> sprintf "'%s'" s
-                | JsonValue.Number (_, t) -> t
-                | JsonValue.Array items ->
+                | JsonTrue -> "true"
+                | JsonFalse -> "false"
+                | JsonString s -> sprintf "'%s'" s
+                | JsonNumber (_, t) -> t
+                | JsonArray items ->
                     let itemCount = items |> List.length
                     match itemCount with
                     | 0 -> "[]"
                     | 1 -> "[ 1 item ]"
                     | n -> sprintf "[ %d items ]" n
-                | JsonValue.Object props ->
+                | JsonObject props ->
                     let propCount = props |> List.length
                     match propCount with
                     | 0 -> "{}"
                     | 1 -> "{ 1 property }"
                     | n -> sprintf "{ %d properties }" n
-                | JsonValue.Null -> "null"
-                | JsonValue.Undefined -> "undefined"
+                | JsonNull -> "null"
+                | JsonUndefined -> "undefined"
             sprintf "  '%s': %s" p valueStr
         let propLines = props |> List.map toPropLine
         let lines = [ "{" ] @ propLines @ [ "}" ]
@@ -36,24 +36,24 @@ module Message =
         let toItemLine (v : JsonValue) : string =
             let valueStr =
                 match v with 
-                | JsonValue.True -> "true"
-                | JsonValue.False -> "false"
-                | JsonValue.String s -> sprintf "'%s'" s
-                | JsonValue.Number (_, t) -> t
-                | JsonValue.Array items ->
+                | JsonTrue -> "true"
+                | JsonFalse -> "false"
+                | JsonString s -> sprintf "'%s'" s
+                | JsonNumber (_, t) -> t
+                | JsonArray items ->
                     let itemCount = items |> List.length
                     match itemCount with
                     | 0 -> "[]"
                     | 1 -> "[ 1 item ]"
                     | n -> sprintf "[ %d items ]" n
-                | JsonValue.Object props ->
+                | JsonObject props ->
                     let propCount = props |> List.length
                     match propCount with
                     | 0 -> "{}"
                     | 1 -> "{ 1 property }"
                     | n -> sprintf "{ %d properties }" n
-                | JsonValue.Null -> "null"
-                | JsonValue.Undefined -> "undefined"
+                | JsonNull -> "null"
+                | JsonUndefined -> "undefined"
             sprintf "  %s" valueStr
         let itemLines = items |> List.map toItemLine
         let lines = [ "[" ] @ itemLines @ [ "]" ]
@@ -62,34 +62,34 @@ module Message =
     
     let private toValueDescription (e: JsonValue): string =
         match e with
-        | JsonValue.True -> "the boolean true"
-        | JsonValue.False -> "the boolean false"
-        | JsonValue.String s -> sprintf "the string %s" s
-        | JsonValue.Number (_, t) -> sprintf "the number %s" t
-        | JsonValue.Array items ->
+        | JsonTrue -> "the boolean true"
+        | JsonFalse -> "the boolean false"
+        | JsonString s -> sprintf "the string %s" s
+        | JsonNumber (_, t) -> sprintf "the number %s" t
+        | JsonArray items ->
             let itemCount = items |> List.length
             match itemCount with
             | 0 -> "an empty array"
             | 1 -> "an array with 1 item"
             | _ -> sprintf "an array with %i items" itemCount
-        | JsonValue.Object _ -> "an object"
-        | JsonValue.Null -> "null"
+        | JsonObject _ -> "an object"
+        | JsonNull -> "null"
         | _ -> "something else"
 
     let toAssertMessage (diff: Diff): string =
         match diff with
-        | Properties ({ Path = path; Left = _; Right = _ }, mismatches) ->
+        | ObjectDiff ({ Path = path; Left = _; Right = _ }, mismatches) ->
             let propString (op: string) (p: string, v: JsonValue): string =
                 let typeStr =
                     match v with
-                    | JsonValue.True
-                    | JsonValue.False -> "bool"
-                    | JsonValue.String _ -> "string"
-                    | JsonValue.Number _ -> "number"
-                    | JsonValue.Object _ -> "object"
-                    | JsonValue.Array _ -> "array"
-                    | JsonValue.Null -> "null"
-                    | JsonValue.Undefined
+                    | JsonTrue
+                    | JsonFalse -> "bool"
+                    | JsonString _ -> "string"
+                    | JsonNumber _ -> "number"
+                    | JsonObject _ -> "object"
+                    | JsonArray _ -> "array"
+                    | JsonNull -> "null"
+                    | JsonUndefined
                     | _ -> "undefined"
 
                 sprintf " %s '%s' (%s)" op p typeStr
@@ -141,9 +141,9 @@ module Message =
                 |> String.concat "\n"
 
             sprintf "Object mismatch at %s.\n%s" path details
-        | Value { Path = path; Left = actual; Right = expected } ->
+        | ValueDiff { Path = path; Left = actual; Right = expected } ->
             match (actual, expected) with
-            | (JsonValue.String actualStr, JsonValue.String expectedStr) -> 
+            | (JsonString actualStr, JsonString expectedStr) -> 
                 let maxStrLen =
                     max (String.length expectedStr) (String.length actualStr)
                 let comparisonStr =
@@ -151,26 +151,26 @@ module Message =
                     then sprintf "Expected\n    %s\nbut was\n    %s" expectedStr actualStr
                     else sprintf "Expected %s but was %s." expectedStr actualStr
                 sprintf "String value mismatch at %s.\n%s" path comparisonStr
-            | (JsonValue.Number (_, actualNumberText), JsonValue.Number (_, expectedNumberText)) ->
+            | (JsonNumber (_, actualNumberText), JsonNumber (_, expectedNumberText)) ->
                 sprintf "Number value mismatch at %s.\nExpected %s but was %s." path expectedNumberText actualNumberText
             | _ -> sprintf "Some other value mismatch at %s." path
-        | Type { Path = path; Left = actual; Right = expected } ->
+        | TypeDiff { Path = path; Left = actual; Right = expected } ->
             match (actual, expected) with
-            | (JsonValue.True, JsonValue.False) ->
+            | (JsonTrue, JsonFalse) ->
                 sprintf "Boolean value mismatch at %s.\nExpected false but was true." path
-            | (JsonValue.False, JsonValue.True) ->
+            | (JsonFalse, JsonTrue) ->
                sprintf "Boolean value mismatch at %s.\nExpected true but was false." path
             | (_, _) ->
                 let expectedMessage = toValueDescription expected
                 let actualMessage = toValueDescription actual
                 sprintf "Type mismatch at %s.\nExpected %s but was %s." path expectedMessage actualMessage
-        | Items ({ Path = path; Left = _; Right = _ }, mismatches) ->
+        | ArrayDiff ({ Path = path; Left = _; Right = _ }, mismatches) ->
             let itemString (op : string) (ix: int, v: JsonValue): string =
                 let typeStr jv =
                     match jv with
-                    | JsonValue.True -> "the boolean true"
-                    | JsonValue.False -> "the boolean false"
-                    | JsonValue.String s ->
+                    | JsonTrue -> "the boolean true"
+                    | JsonFalse -> "the boolean false"
+                    | JsonString s ->
                         let truncate (maxlen : int) (str : string) =
                             let len = String.length str
                             if len > maxlen then
@@ -178,11 +178,11 @@ module Message =
                                 sprintf "%s %s" (str.Substring(0, maxlen)) truncInfo
                             else str                                
                         sprintf "the string %s" (truncate 30 s)
-                    | JsonValue.Number (_, t) -> sprintf "the number %s" t
-                    | JsonValue.Object props -> toObjectSummary props
-                    | JsonValue.Array items -> toArraySummary items
-                    | JsonValue.Null -> "null"
-                    | JsonValue.Undefined
+                    | JsonNumber (_, t) -> sprintf "the number %s" t
+                    | JsonObject props -> toObjectSummary props
+                    | JsonArray items -> toArraySummary items
+                    | JsonNull -> "null"
+                    | JsonUndefined
                     | _ -> "undefined"                
                 sprintf " %s [%d]: %s" op ix (typeStr v)
 

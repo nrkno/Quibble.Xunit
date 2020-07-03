@@ -5,6 +5,6 @@ framework: netcore3.1, netstandard2.0
 
 nuget System.Text.Json
 nuget FSharp.Core 4.7.0
-nuget Quibble ~> 0.1
+nuget Quibble ~> 0.2
 nuget xunit
 nuget xunit.runner.visualstudio 2.4.1

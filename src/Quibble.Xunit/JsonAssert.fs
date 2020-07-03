@@ -25,7 +25,7 @@ module JsonAssert =
         let checkDiffConfig (diffConfig : JsonDiffConfig) (diff : Diff) =
             if diffConfig.allowAdditionalProperties then
                 match diff with
-                | Properties (diffPoint, mismatches) ->
+                | ObjectDiff (diffPoint, mismatches) ->
                     // Left JSON <-> Actual JSON (Left-only properties are additional properties.)
                     // Right JSON <-> Expected JSON (Right-only properties are missing properties.)
                     let keepRightOnly =
@@ -35,7 +35,7 @@ module JsonAssert =
                     let remaining = mismatches |> List.filter keepRightOnly
                     match remaining with
                     | [] -> None
-                    | _ -> Some <| Properties (diffPoint, remaining)
+                    | _ -> Some <| ObjectDiff (diffPoint, remaining)
                 | _ -> Some diff
             else
                 Some diff
