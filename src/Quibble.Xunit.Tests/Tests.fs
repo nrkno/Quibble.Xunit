@@ -134,7 +134,7 @@ let ``Long array example - with single replacement``() =
     "author": "Susan Lammers"
 }, {
     "title": "The Little Schemer",
-    "authors": [ "Daniel Friedman", "Mattias Fellesian" ]
+    "authors": [ "Daniel P. Friedman", "Matthias Felleisen" ]
 }, {
     "title": "Object Design",
     "authors": [ "Rebecca Wirfs-Brock", "Alan McKean" ]
@@ -163,7 +163,7 @@ let ``Long array example - with single replacement``() =
     "author": "Peter Seibel"
 }, {
     "title": "The Little Schemer",
-    "authors": [ "Daniel Friedman", "Mattias Fellesian" ]
+    "authors": [ "Daniel P. Friedman", "Matthias Felleisen" ]
 }, {
     "title": "Object Design",
     "authors": [ "Rebecca Wirfs-Brock", "Alan McKean" ]
@@ -197,7 +197,7 @@ let ``Long array example - with modifications``() =
     "author": "Susan Lammers"
 }, {
     "title": "The Little Schemer",
-    "authors": [ "Daniel Friedman", "Mattias Fellesian" ]
+    "authors": [ "Daniel P. Friedman", "Matthias Felleisen" ]
 }, {
     "title": "Object Design",
     "authors": [ "Rebecca Wirfs-Brock", "Alan McKean" ]
@@ -226,7 +226,7 @@ let ``Long array example - with modifications``() =
     "author": "Peter Seibel"
 }, {
     "title": "The Little Schemer",
-    "authors": [ "Daniel Friedman", "Mattias Fellesian" ]
+    "authors": [ "Daniel P. Friedman", "Matthias Felleisen" ]
 }, {
     "title": "Object Design",
     "authors": [ "Rebecca Wirfs-Brock", "Alan McKean" ]
@@ -256,7 +256,7 @@ let ``Long array example - with arrays``() =
 [ "Data and Reality", "William Kent" ],
 [ "Thinking Forth", "Leo Brodie" ],
 [ "Programmers at Work", "Susan Lammers" ],
-[ "The Little Schemer", "Daniel P Friedman", "Matthias Felleisen" ],
+[ "The Little Schemer", "Daniel P. Friedman", "Matthias Felleisen" ],
 [ "Object Design", "Rebecca Wirfs-Brock", "Alan McKean" ],
 [ "Domain Modelling made Functional", "Scott Wlaschin" ],
 [ "The Psychology of Computer Programming", "Gerald M. Weinberg" ],
@@ -268,7 +268,7 @@ let ``Long array example - with arrays``() =
 [ "Data and Reality", "William Kent" ],
 [ "Thinking Forth", "Leo Brodie" ],
 [ "Coders at Work", "Peter Seibel" ],
-[ "The Little Schemer", "Daniel P Friedman", "Matthias Felleisen" ],
+[ "The Little Schemer", "Daniel P. Friedman", "Matthias Felleisen" ],
 [ "Object Design", "Rebecca Wirfs-Brock", "Alan McKean" ],
 [ "Domain Modelling made Functional", "Scott Wlaschin" ],
 [ "The Psychology of Computer Programming", "Gerald M. Weinberg" ],
