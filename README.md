@@ -71,6 +71,8 @@ does not protest either, since JSON supports scientific notation for numbers. Ag
 
 ### Comparing arrays
 
+Quibble uses Ratcliff/Obershelp pattern recognition to describe the differences between arrays. It is based on finding the longest common sub-arrays. 
+
 #### Array example: Number of items
 
 ```
@@ -80,8 +82,9 @@ JsonAssert.Equal("[ 3 ]", "[ 3, 7 ]")
 throws a `JsonAssertException` and offers the following explanation:
 
 ```
-Array length mismatch at $.
-Expected 1 item but was 2.
+Array mismatch at $.
+Additional item:
+ + [1]: the number 7
 Expected: [ 3 ]
 Actual:   [ 3, 7 ]
    at Quibble.Xunit.JsonAssert.Equal(String expectedJsonString, String actualJsonString)
@@ -96,15 +99,185 @@ JsonAssert.Equal("[ 3, 7 ]", "[ 7, 3 ]")
 throws a `JsonAssertException` and offers the following explanation:
 
 ```
-Found 2 differences.
-# 1: Number value mismatch at $[0].
-Expected 3 but was 7.
-# 2: Number value mismatch at $[1].
-Expected 7 but was 3.
+Array mismatch at $.
+Missing item:
+ - [1]: the number 7
+Additional item:
+ + [0]: the number 7
 Expected: [ 3, 7 ]
 Actual:   [ 7, 3 ]
    at Quibble.Xunit.JsonAssert.Equal(String expectedJsonString, String actualJsonString)
 ```
+
+In this case, [3] is identified as the longest common sub-array, and the leading 7 in the right array and the trailing 7 in the left array are considered extra elements (which happen to have the same value).
+
+#### Array example: More items
+
+The benefits of using longest common sub-array for creating the diff are more apparent for longer arrays that are almost the same.
+
+```
+let expectedJsonString = """[{
+    "title": "Data and Reality",
+    "author": "William Kent"
+}, {
+    "title": "Thinking Forth",
+    "author": "Leo Brodie"
+}, {
+    "title": "Programmers at Work",
+    "author": "Susan Lammers"
+}, {
+    "title": "The Little Schemer",
+    "authors": [ "Daniel P. Friedman", "Matthias Felleisen" ]
+}, {
+    "title": "Object Design",
+    "authors": [ "Rebecca Wirfs-Brock", "Alan McKean" ]
+}, {
+    "title": "Domain Modelling made Functional",
+    "author": "Scott Wlaschin"
+}, {
+    "title": "The Psychology of Computer Programming",
+    "author": "Gerald M. Weinberg"
+}, {
+    "title": "Exercises in Programming Style",
+    "author": "Cristina Videira Lopes"
+}, {
+    "title": "Land of Lisp",
+    "author": "Conrad Barski"
+}]"""
+let actualJsonString = """[{
+    "title": "Data and Reality",
+    "author": "William Kent"
+}, {
+    "title": "Thinking Forth",
+    "author": "Leo Brodie"
+}, {
+    "title": "Coders at Work",
+    "author": "Peter Seibel"
+}, {
+    "title": "The Little Schemer",
+    "authors": [ "Daniel P. Friedman", "Matthias Felleisen" ]
+}, {
+    "title": "Object Design",
+    "authors": [ "Rebecca Wirfs-Brock", "Alan McKean" ]
+}, {
+    "title": "Domain Modelling made Functional",
+    "author": "Scott Wlaschin"
+}, {
+    "title": "The Psychology of Computer Programming",
+    "author": "Gerald M. Weinberg"
+}, {
+    "title": "Turtle Geometry",
+    "authors": [ "Hal Abelson", "Andrea diSessa" ]
+}, {
+    "title": "Exercises in Programming Style",
+    "author": "Cristina Videira Lopes"
+}, {
+    "title": "Land of Lisp",
+    "author": "Conrad Barski"
+}]"""
+
+JsonAssert.Equal(expectedJsonString, actualJsonString)
+```
+
+throws a `JsonAssertException` and offers the following explanation:
+
+```
+Array mismatch at $.
+Missing item:
+ - [2]: {
+  'title': 'Programmers at Work'
+  'author': 'Susan Lammers'
+}
+Additional items:
+ + [2]: {
+  'title': 'Coders at Work'
+  'author': 'Peter Seibel'
+}
+ + [7]: {
+  'title': 'Turtle Geometry'
+  'authors': [ 2 items ]
+}
+```
+
+Here we see that the item at index 2 ("Programmers at Work" by Susan Lammers) in the expected JSON is missing from the actual JSON, which also contains two additional items ("Coders at Work" by Peter Seibel, at index 2, and "Turtle Geometry" by Hal Abelson and Andrea diSessa, at index 7).
+
+#### Array example: Item substitution
+
+In the special case where two arrays differ in such a way that all differences can be seen as substitutions of existing items rather than additions or removals, Quibble.Xunit presents the differences as individual differences at the appropriate indexes. 
+
+```
+let expectedJsonString = """[{
+    "title": "Data and Reality",
+    "author": "William Kent"
+}, {
+    "title": "Thinking Forth",
+    "author": "Leo Brodie"
+}, {
+    "title": "Programmers at Work",
+    "author": "Susan Lammers"
+}, {
+    "title": "The Little Schemer",
+    "authors": [ "Daniel P. Friedman", "Matthias Felleisen" ]
+}, {
+    "title": "Object Design",
+    "authors": [ "Rebecca Wirfs-Brock", "Alan McKean" ]
+}, {
+    "title": "Domain Modelling made Functional",
+    "author": "Scott Wlaschin"
+}, {
+    "title": "The Psychology of Computer Programming",
+    "author": "Gerald M. Weinberg"
+}, {
+    "title": "Exercises in Programming Style",
+    "author": "Cristina Videira Lopes"
+}, {
+    "title": "Land of Lisp",
+    "author": "Conrad Barski"
+}]"""
+
+let actualJsonString = """[{
+    "title": "Data and Reality",
+    "author": "William Kent"
+}, {
+    "title": "Thinking Forth",
+    "author": "Leo Brodie"
+}, {
+    "title": "Coders at Work",
+    "author": "Peter Seibel"
+}, {
+    "title": "The Little Schemer",
+    "authors": [ "Daniel P. Friedman", "Matthias Felleisen" ]
+}, {
+    "title": "Object Design",
+    "authors": [ "Rebecca Wirfs-Brock", "Alan McKean" ]
+}, {
+    "title": "Domain Modelling made Functional",
+    "author": "Scott Wlaschin"
+}, {
+    "title": "The Psychology of Computer Programming",
+    "author": "Gerald M. Weinberg"
+}, {
+    "title": "Exercises in Programming Style",
+    "author": "Cristina Videira Lopes"
+}, {
+    "title": "Land of Lisp",
+    "author": "Conrad Barski"
+}]"""
+
+JsonAssert.Equal(expectedJsonString, actualJsonString)
+```
+
+throws a `JsonAssertException` and offers the following explanation:
+
+```
+Found 2 differences.
+# 1: String value mismatch at $[2].title.
+Expected Programmers at Work but was Coders at Work.
+# 2: String value mismatch at $[2].author.
+Expected Susan Lammers but was Peter Seibel.
+```
+
+In this case, the item at index 2 in the array in the actual JSON differs from the item at the same index in the expected JSON ("Coders at Work" by Peter Seibel as opposed to "Programmers at Work" by Susan Lammers).
 
 ### Comparing objects
 
@@ -283,6 +456,8 @@ does not protest either, since JSON supports scientific notation for numbers. Ag
 
 ### Comparing arrays
 
+Quibble uses Ratcliff/Obershelp pattern recognition to describe the differences between arrays. It is based on finding the longest common sub-arrays. 
+
 #### Array example: Number of items
 
 ```
@@ -292,8 +467,9 @@ JsonAssert.Equal("[ 3 ]", "[ 3, 7 ]")
 throws a `JsonAssertException` and offers the following explanation:
 
 ```
-Array length mismatch at $.
-Expected 1 item but was 2.
+Array mismatch at $.
+Additional item:
+ + [1]: the number 7
 Expected: [ 3 ]
 Actual:   [ 3, 7 ]
    at Quibble.Xunit.JsonAssert.Equal(String expectedJsonString, String actualJsonString)
@@ -308,15 +484,187 @@ JsonAssert.Equal("[ 3, 7 ]", "[ 7, 3 ]")
 throws a `JsonAssertException` and offers the following explanation:
 
 ```
-Found 2 differences.
-# 1: Number value mismatch at $[0].
-Expected 3 but was 7.
-# 2: Number value mismatch at $[1].
-Expected 7 but was 3.
+Array mismatch at $.
+Missing item:
+ - [1]: the number 7
+Additional item:
+ + [0]: the number 7
 Expected: [ 3, 7 ]
 Actual:   [ 7, 3 ]
    at Quibble.Xunit.JsonAssert.Equal(String expectedJsonString, String actualJsonString)
 ```
+
+In this case, [3] is identified as the longest common sub-array, and the leading 7 in the right array and the trailing 7 in the left array are considered extra elements (which happen to have the same value).
+
+
+#### Array example: More items
+
+The benefits of using longest common sub-array for creating the diff are more apparent for longer arrays that are almost the same.
+
+```
+var expectedJsonString = @"[{
+    ""title"": ""Data and Reality"",
+    ""author"": ""William Kent""
+}, {
+    ""title"": ""Thinking Forth"",
+    ""author"": ""Leo Brodie""
+}, {
+    ""title"": ""Programmers at Work"",
+    ""author"": ""Susan Lammers""
+}, {
+    ""title"": ""The Little Schemer"",
+    ""authors"": [ ""Daniel P. Friedman"", ""Matthias Felleisen"" ]
+}, {
+    ""title"": ""Object Design"",
+    ""authors"": [ ""Rebecca Wirfs-Brock"", ""Alan McKean"" ]
+}, {
+    ""title"": ""Domain Modelling made Functional"",
+    ""author"": ""Scott Wlaschin""
+}, {
+    ""title"": ""The Psychology of Computer Programming"",
+    ""author"": ""Gerald M. Weinberg""
+}, {
+    ""title"": ""Exercises in Programming Style"",
+    ""author"": ""Cristina Videira Lopes""
+}, {
+    ""title"": ""Land of Lisp"",
+    ""author"": ""Conrad Barski""
+}]";
+
+var actualJsonString = @"[{
+    ""title"": ""Data and Reality"",
+    ""author"": ""William Kent""
+}, {
+    ""title"": ""Thinking Forth"",
+    ""author"": ""Leo Brodie""
+}, {
+    ""title"": ""Coders at Work"",
+    ""author"": ""Peter Seibel""
+}, {
+    ""title"": ""The Little Schemer"",
+    ""authors"": [ ""Daniel P. Friedman"", ""Matthias Felleisen"" ]
+}, {
+    ""title"": ""Object Design"",
+    ""authors"": [ ""Rebecca Wirfs-Brock"", ""Alan McKean"" ]
+}, {
+    ""title"": ""Domain Modelling made Functional"",
+    ""author"": ""Scott Wlaschin""
+}, {
+    ""title"": ""The Psychology of Computer Programming"",
+    ""author"": ""Gerald M. Weinberg""
+}, {
+    ""title"": ""Turtle Geometry"",
+    ""authors"": [ ""Hal Abelson"", ""Andrea diSessa"" ]
+}, {
+    ""title"": ""Exercises in Programming Style"",
+    ""author"": ""Cristina Videira Lopes""
+}, {
+    ""title"": ""Land of Lisp"",
+    ""author"": ""Conrad Barski""
+}]";
+
+JsonAssert.Equal(expectedJsonString, actualJsonString)
+```
+
+throws a `JsonAssertException` and offers the following explanation:
+
+```
+Array mismatch at $.
+Missing item:
+ - [2]: {
+  'title': 'Programmers at Work'
+  'author': 'Susan Lammers'
+}
+Additional items:
+ + [2]: {
+  'title': 'Coders at Work'
+  'author': 'Peter Seibel'
+}
+ + [7]: {
+  'title': 'Turtle Geometry'
+  'authors': [ 2 items ]
+}
+```
+
+Here we see that the item at index 2 ("Programmers at Work" by Susan Lammers) in the expected JSON is missing from the actual JSON, which also contains two additional items ("Coders at Work" by Peter Seibel, at index 2, and "Turtle Geometry" by Hal Abelson and Andrea diSessa, at index 7).
+
+#### Array example: Item substitution
+
+In the special case where two arrays differ in such a way that all differences can be seen as substitutions of existing items rather than additions or removals, Quibble.Xunit presents the differences as individual differences at the appropriate indexes. 
+
+```
+var expectedJsonString = @"[{
+    ""title"": ""Data and Reality"",
+    ""author"": ""William Kent""
+}, {
+    ""title"": ""Thinking Forth"",
+    ""author"": ""Leo Brodie""
+}, {
+    ""title"": ""Programmers at Work"",
+    ""author"": ""Susan Lammers""
+}, {
+    ""title"": ""The Little Schemer"",
+    ""authors"": [ ""Daniel P. Friedman"", ""Matthias Felleisen"" ]
+}, {
+    ""title"": ""Object Design"",
+    ""authors"": [ ""Rebecca Wirfs-Brock"", ""Alan McKean"" ]
+}, {
+    ""title"": ""Domain Modelling made Functional"",
+    ""author"": ""Scott Wlaschin""
+}, {
+    ""title"": ""The Psychology of Computer Programming"",
+    ""author"": ""Gerald M. Weinberg""
+}, {
+    ""title"": ""Exercises in Programming Style"",
+    ""author"": ""Cristina Videira Lopes""
+}, {
+    ""title"": ""Land of Lisp"",
+    ""author"": ""Conrad Barski""
+}]";
+
+var actualJsonString = @"[{
+    ""title"": ""Data and Reality"",
+    ""author"": ""William Kent""
+}, {
+    ""title"": ""Thinking Forth"",
+    ""author"": ""Leo Brodie""
+}, {
+    ""title"": ""Coders at Work"",
+    ""author"": ""Peter Seibel""
+}, {
+    ""title"": ""The Little Schemer"",
+    ""authors"": [ ""Daniel P. Friedman"", ""Matthias Felleisen"" ]
+}, {
+    ""title"": ""Object Design"",
+    ""authors"": [ ""Rebecca Wirfs-Brock"", ""Alan McKean"" ]
+}, {
+    ""title"": ""Domain Modelling made Functional"",
+    ""author"": ""Scott Wlaschin""
+}, {
+    ""title"": ""The Psychology of Computer Programming"",
+    ""author"": ""Gerald M. Weinberg""
+}, {
+    ""title"": ""Exercises in Programming Style"",
+    ""author"": ""Cristina Videira Lopes""
+}, {
+    ""title"": ""Land of Lisp"",
+    ""author"": ""Conrad Barski""
+}]";
+
+JsonAssert.Equal(expectedJsonString, actualJsonString)
+```
+
+throws a `JsonAssertException` and offers the following explanation:
+
+```
+Found 2 differences.
+# 1: String value mismatch at $[2].title.
+Expected Programmers at Work but was Coders at Work.
+# 2: String value mismatch at $[2].author.
+Expected Susan Lammers but was Peter Seibel.
+```
+
+In this case, the item at index 2 in the array in the actual JSON differs from the item at the same index in the expected JSON ("Coders at Work" by Peter Seibel as opposed to "Programmers at Work" by Susan Lammers).
 
 ### Comparing objects
 
