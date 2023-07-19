@@ -6,84 +6,84 @@ open Quibble.Xunit
 [<Fact>]
 let ``True vs false yields a boolean value mismatch.`` () =
     let ex = Assert.Throws<JsonAssertException>(fun () -> JsonAssert.Equal("true", "false"))
-    Assert.Equal("Boolean value mismatch at $.\nExpected true but was false.", ex.UserMessage)
+    Assert.Equal("Boolean value mismatch at $.\nExpected true but was false.", ex.Message)
 
 [<Fact>]
 let ``True vs null yields a type mismatch.`` () =
     let ex = Assert.Throws<JsonAssertException>(fun () -> JsonAssert.Equal("true", "null"))
-    Assert.Equal("Type mismatch at $.\nExpected the boolean true but was null.", ex.UserMessage)
+    Assert.Equal("Type mismatch at $.\nExpected the boolean true but was null.", ex.Message)
 
 [<Fact>]
 let ``True vs 1 yields a type mismatch.`` () =
     let ex = Assert.Throws<JsonAssertException>(fun () -> JsonAssert.Equal("true", "1"))
-    Assert.Equal("Type mismatch at $.\nExpected the boolean true but was the number 1.", ex.UserMessage)
+    Assert.Equal("Type mismatch at $.\nExpected the boolean true but was the number 1.", ex.Message)
 
 [<Fact>]
 let ``0 vs null yields a type mismatch.`` () =
     let ex = Assert.Throws<JsonAssertException>(fun () -> JsonAssert.Equal("0", "null"))
-    Assert.Equal("Type mismatch at $.\nExpected the number 0 but was null.", ex.UserMessage)
+    Assert.Equal("Type mismatch at $.\nExpected the number 0 but was null.", ex.Message)
 
 [<Fact>]
 let ``True vs "true" yields a type mismatch.`` () =
     let ex = Assert.Throws<JsonAssertException>(fun () -> JsonAssert.Equal("true", "\"true\""))
-    Assert.Equal("Type mismatch at $.\nExpected the boolean true but was the string true.", ex.UserMessage)
+    Assert.Equal("Type mismatch at $.\nExpected the boolean true but was the string true.", ex.Message)
 
 [<Fact>]
 let ``1 vs 2 yields a number value mismatch.`` () =
     let ex = Assert.Throws<JsonAssertException>(fun () -> JsonAssert.Equal("1", "2"))
-    Assert.Equal("Number value mismatch at $.\nExpected 1 but was 2.", ex.UserMessage)
+    Assert.Equal("Number value mismatch at $.\nExpected 1 but was 2.", ex.Message)
 
 [<Fact>]
 let ``[ 3 ] vs [ 3, 7 ] yields an array mismatch with one additional item.`` () =
     let ex = Assert.Throws<JsonAssertException>(fun () -> JsonAssert.Equal("[ 3 ]", "[ 3, 7 ]"))
-    Assert.Equal("Array mismatch at $.\nAdditional item:\n + [1]: the number 7", ex.UserMessage)
+    Assert.Equal("Array mismatch at $.\nAdditional item:\n + [1]: the number 7", ex.Message)
     
 [<Fact>]
 let ``[ 3, 7 ] vs [ 7, 3 ] yields an array mismatch with one missing and one additional item.`` () =
     // [ 3 ] is picked as the common sublist.
     let ex = Assert.Throws<JsonAssertException>(fun () -> JsonAssert.Equal("[ 3, 7 ]", "[ 7, 3 ]"))
-    Assert.Equal("Array mismatch at $.\nMissing item:\n - [1]: the number 7\nAdditional item:\n + [0]: the number 7", ex.UserMessage)
+    Assert.Equal("Array mismatch at $.\nMissing item:\n - [1]: the number 7\nAdditional item:\n + [0]: the number 7", ex.Message)
 
 [<Fact>]
 let ``[ 3, 7 ] vs [ 3, 5 ] yields a value difference at the appropriate index.`` () =
     let ex = Assert.Throws<JsonAssertException>(fun () -> JsonAssert.Equal("[ 3, 7 ]", "[ 3, 5 ]"))
-    Assert.Equal("Number value mismatch at $[1].\nExpected 7 but was 5.", ex.UserMessage)
+    Assert.Equal("Number value mismatch at $[1].\nExpected 7 but was 5.", ex.Message)
 
 [<Fact>]
 let ``[] vs [ 3, 7 ] yields an array mismatch with two additional items.`` () =
     let ex = Assert.Throws<JsonAssertException>(fun () -> JsonAssert.Equal("[]", "[ 3, 7 ]"))
-    Assert.Equal("Array mismatch at $.\nAdditional items:\n + [0]: the number 3\n + [1]: the number 7", ex.UserMessage)
+    Assert.Equal("Array mismatch at $.\nAdditional items:\n + [0]: the number 3\n + [1]: the number 7", ex.Message)
 
 [<Fact>]
 let ``[ 3, 7 ] vs [] yields an array mismatch with two missing items.`` () =
     let ex = Assert.Throws<JsonAssertException>(fun () -> JsonAssert.Equal("[ 3, 7 ]", "[]"))
-    Assert.Equal("Array mismatch at $.\nMissing items:\n - [0]: the number 3\n - [1]: the number 7", ex.UserMessage)
+    Assert.Equal("Array mismatch at $.\nMissing items:\n - [0]: the number 3\n - [1]: the number 7", ex.Message)
 
 [<Fact>]
 let ``[] vs {} yields a type mismatch.`` () =
     let ex = Assert.Throws<JsonAssertException>(fun () -> JsonAssert.Equal("[]", "{}"))
-    Assert.Equal("Type mismatch at $.\nExpected an empty array but was an object.", ex.UserMessage)
+    Assert.Equal("Type mismatch at $.\nExpected an empty array but was an object.", ex.Message)
 
 [<Fact>]
 let ``Widget property mismatch example.`` () =
     let expectedJsonString = """{ "item": "widget", "price": 12.20 }"""
     let actualJsonString = """{ "item": "widget", "quantity": 88, "in stock": true }"""
     let ex = Assert.Throws<JsonAssertException>(fun () -> JsonAssert.Equal(expectedJsonString, actualJsonString))
-    Assert.Equal("Object mismatch at $.\nMissing property:\n - 'price' (number)\nAdditional properties:\n + 'quantity' (number)\n + 'in stock' (bool)", ex.UserMessage)
+    Assert.Equal("Object mismatch at $.\nMissing property:\n - 'price' (number)\nAdditional properties:\n + 'quantity' (number)\n + 'in stock' (bool)", ex.Message)
 
 [<Fact>]
 let ``Missing property yields an object mismatch.`` () =
     let expectedJsonString = """{ "item": "widget", "price": 12.20 }"""
     let actualJsonString = """{ "item": "widget" }"""
     let ex = Assert.Throws<JsonAssertException>(fun () -> JsonAssert.Equal(expectedJsonString, actualJsonString))
-    Assert.Equal("Object mismatch at $.\nMissing property:\n - 'price' (number)", ex.UserMessage)
+    Assert.Equal("Object mismatch at $.\nMissing property:\n - 'price' (number)", ex.Message)
     
 [<Fact>]
 let ``Additional property yields an object mismatch by default.`` () =
     let expectedJsonString = """{ "item": "widget" }"""
     let actualJsonString = """{ "item": "widget", "price": 12.20 }"""
     let ex = Assert.Throws<JsonAssertException>(fun () -> JsonAssert.Equal(expectedJsonString, actualJsonString))
-    Assert.Equal("Object mismatch at $.\nAdditional property:\n + 'price' (number)", ex.UserMessage)
+    Assert.Equal("Object mismatch at $.\nAdditional property:\n + 'price' (number)", ex.Message)
 
 [<Fact>]
 let ``Allowing additional properties with config override.`` () =
@@ -118,7 +118,7 @@ let ``Books example``() =
     }]
 }"""
     let ex = Assert.Throws<JsonAssertException>(fun () -> JsonAssert.Equal(expectedJsonString, actualJsonString))
-    Assert.Equal("Found 2 differences.\n# 1: Object mismatch at $.books[0].\nAdditional property:\n + 'edition' (string)\n# 2: String value mismatch at $.books[1].author.\nExpected Leo Brodie but was Chuck Moore.", ex.UserMessage)
+    Assert.Equal("Found 2 differences.\n# 1: Object mismatch at $.books[0].\nAdditional property:\n + 'edition' (string)\n# 2: String value mismatch at $.books[1].author.\nExpected Leo Brodie but was Chuck Moore.", ex.Message)
 
 [<Fact>]
 let ``Long array example - with single replacement``() =
@@ -181,7 +181,7 @@ let ``Long array example - with single replacement``() =
     "author": "Conrad Barski"
 }]"""
     let ex = Assert.Throws<JsonAssertException>(fun () -> JsonAssert.Equal(expectedJsonString, actualJsonString))
-    Assert.Equal("Found 2 differences.\n# 1: String value mismatch at $[2].title.\nExpected Programmers at Work but was Coders at Work.\n# 2: String value mismatch at $[2].author.\nExpected Susan Lammers but was Peter Seibel.", ex.UserMessage)
+    Assert.Equal("Found 2 differences.\n# 1: String value mismatch at $[2].title.\nExpected Programmers at Work but was Coders at Work.\n# 2: String value mismatch at $[2].author.\nExpected Susan Lammers but was Peter Seibel.", ex.Message)
 
 [<Fact>]
 let ``Long array example - with modifications``() =
@@ -247,7 +247,7 @@ let ``Long array example - with modifications``() =
     "author": "Conrad Barski"
 }]"""
     let ex = Assert.Throws<JsonAssertException>(fun () -> JsonAssert.Equal(expectedJsonString, actualJsonString))
-    Assert.Equal("Array mismatch at $.\nMissing item:\n - [2]: {\n  'title': 'Programmers at Work'\n  'author': 'Susan Lammers'\n}\nAdditional items:\n + [2]: {\n  'title': 'Coders at Work'\n  'author': 'Peter Seibel'\n}\n + [7]: {\n  'title': 'Turtle Geometry'\n  'authors': [ 2 items ]\n}", ex.UserMessage)
+    Assert.Equal("Array mismatch at $.\nMissing item:\n - [2]: {\n  'title': 'Programmers at Work'\n  'author': 'Susan Lammers'\n}\nAdditional items:\n + [2]: {\n  'title': 'Coders at Work'\n  'author': 'Peter Seibel'\n}\n + [7]: {\n  'title': 'Turtle Geometry'\n  'authors': [ 2 items ]\n}", ex.Message)
 
 [<Fact>]
 let ``Long array example - with arrays``() =
@@ -277,4 +277,4 @@ let ``Long array example - with arrays``() =
 [ "Land of Lisp", "Conrad Barski" ]
 ]"""
     let ex = Assert.Throws<JsonAssertException>(fun () -> JsonAssert.Equal(expectedJsonString, actualJsonString))
-    Assert.Equal("Array mismatch at $.\nMissing item:\n - [2]: [\n  'Programmers at Work'\n  'Susan Lammers'\n]\nAdditional items:\n + [2]: [\n  'Coders at Work'\n  'Peter Seibel'\n]\n + [7]: [\n  'Turtle Geometry'\n  'Hal Abelson'\n  'Andrea diSessa'\n]", ex.UserMessage)
+    Assert.Equal("Array mismatch at $.\nMissing item:\n - [2]: [\n  'Programmers at Work'\n  'Susan Lammers'\n]\nAdditional items:\n + [2]: [\n  'Coders at Work'\n  'Peter Seibel'\n]\n + [7]: [\n  'Turtle Geometry'\n  'Hal Abelson'\n  'Andrea diSessa'\n]", ex.Message)
