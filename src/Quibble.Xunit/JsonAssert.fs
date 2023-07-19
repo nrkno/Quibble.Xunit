@@ -4,8 +4,10 @@ open Xunit.Sdk
 open Quibble    
 
 type JsonAssertException(expected: obj, actual: obj, messages: string list) =
-    inherit AssertActualExpectedException(expected, actual, Message.toUserMessage messages)
+    inherit XunitException(Message.toUserMessage messages)
     
+    member Self.Expected = expected
+    member Self.Actual = actual
     member self.DiffMessages = messages
 
 type JsonDiffConfig = {
